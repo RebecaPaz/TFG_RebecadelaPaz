@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Tuple.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">PrincipalMain (25-jun-2017 0:47:16)</a> &gt; <a href="../../index.html" class="el_group">RebecadelaPaz</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Field</a> &gt; <span class="el_source">Tuple.java</span></div><h1>Tuple.java</h1><pre class="source lang-java linenums">package Field;
+
+/**
+ * Clase Tuple
+ *
+ * &lt;p&gt;Crea una tupla para un par de elementos genericos
+ * 
+ * @author Rebeca de la Paz Gonz&amp;aacute;lez
+ *
+ * @param &lt;A&gt;
+ *          parametro de tipo generico
+ * @param &lt;B&gt;
+ *          parametro de tipo generico
+ */
+public class Tuple&lt;A, B&gt; {
+
+  private A elem1;
+  private B elem2;
+
+<span class="fc" id="L20">  public Tuple(A a, B b) {</span>
+<span class="fc" id="L21">    this.elem1 = a;</span>
+<span class="fc" id="L22">    this.elem2 = b;</span>
+<span class="fc" id="L23">  }</span>
+
+<span class="nc" id="L25">  public Tuple() {</span>
+
+<span class="nc" id="L27">  }</span>
+
+  public A getElem1() {
+<span class="fc" id="L30">    return this.elem1;</span>
+  }
+
+  public B getElem2() {
+<span class="fc" id="L34">    return this.elem2;</span>
+  }
+
+  public void setElem1(A elem1) {
+<span class="nc" id="L38">    this.elem1 = elem1;</span>
+<span class="nc" id="L39">  }</span>
+
+  public void setElem2(B elem2) {
+<span class="nc" id="L42">    this.elem2 = elem2;</span>
+<span class="nc" id="L43">  }</span>
+
+  @Override
+  public String toString() {
+
+<span class="nc" id="L48">    return &quot;(&quot; + this.elem1 + &quot;,&quot; + this.elem2 + &quot;)&quot;;</span>
+
+  }
+
+  @Override
+  public boolean equals(Object o) {
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">    if (this == o) {</span>
+<span class="nc" id="L55">      return true;</span>
+    }
+<span class="pc bpc" id="L57" title="2 of 4 branches missed.">    if (o == null || getClass() != o.getClass()) {</span>
+<span class="nc" id="L58">      return false;</span>
+    }
+
+<span class="fc" id="L61">    Tuple&lt;?, ?&gt; tuple = (Tuple&lt;?, ?&gt;) o;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">    if (!elem1.equals(tuple.elem1)) {</span>
+<span class="fc" id="L63">      return false;</span>
+    }
+<span class="fc" id="L65">    return elem2.equals(tuple.elem2);</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>PrincipalMain (25-jun-2017 0:47:16)</div></body></html>

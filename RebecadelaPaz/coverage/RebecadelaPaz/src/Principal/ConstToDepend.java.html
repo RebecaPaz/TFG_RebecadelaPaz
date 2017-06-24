@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ConstToDepend.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">PrincipalMain (25-jun-2017 0:47:16)</a> &gt; <a href="../../index.html" class="el_group">RebecadelaPaz</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Principal</a> &gt; <span class="el_source">ConstToDepend.java</span></div><h1>ConstToDepend.java</h1><pre class="source lang-java linenums">package Principal;
+
+import Field.FieldRelation;
+import Utils.Node;
+import Utils.Relation;
+import Utils.Tree;
+
+import java.util.ArrayList;
+import java.util.Stack;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * Clase ConstToDepend
+ * 
+ * &lt;p&gt;Clase donde se realizan todas operaciones que conllevan la transformacion a dependencias
+ * 
+ * @author Rebeca de la Paz Gonz&amp;aacute;lez
+ *
+ * @param &lt;A&gt; parametro de tipo generico
+ * @param &lt;B&gt; parametro de tipo generico
+ */
+<span class="fc" id="L23">public class ConstToDepend&lt;A,B&gt; {</span>
+<span class="fc" id="L24">  private int num = 0;  // contador sobre los elementos que forman una frase</span>
+<span class="fc" id="L25">  private Relation rootSentence = null; // relacion del nodo raiz de la oracion</span>
+<span class="fc" id="L26">  private boolean specialRoot = false;</span>
+<span class="fc" id="L27">  private boolean copulativeVerb = false;</span>
+<span class="fc" id="L28">  private FieldRelation&lt;A,B&gt; fields = null;</span>
+<span class="fc" id="L29">  private Stack&lt;String&gt; contextNodes = new Stack&lt;String&gt;();</span>
+
+  /**
+   * Establecer las etiquetas de funcionalidad para las distintas relaciones
+   * 
+   * @param fieldsRelations
+   *          listado de etiquetas de las relaciones
+   */
+  public void setFieldsRelations(FieldRelation&lt;A, B&gt; fieldsRelations) {
+
+<span class="fc" id="L39">    this.fields = fieldsRelations;</span>
+
+<span class="fc" id="L41">  }</span>
+
+  /**
+   * Obtener una lista de strings con las formas verbales de ser, estar y parecer
+   * 
+   * @return lista de string con las formas verbales
+   */
+  public ArrayList&lt;String&gt; getCopulativeVerbs() {
+
+<span class="fc" id="L50">    ArrayList&lt;String&gt; enumNames = (ArrayList&lt;String&gt;) Stream.of(CopulativeVerbs.values())</span>
+<span class="fc" id="L51">        .map(Enum::name).collect(Collectors.toList());</span>
+<span class="fc" id="L52">    return enumNames;</span>
+  }
+
+  public int getNum() {
+<span class="fc" id="L56">    return this.num;</span>
+  }
+
+  public void setNum(int num) {
+<span class="nc" id="L60">    this.num = num;</span>
+<span class="nc" id="L61">  }</span>
+
+  public Relation getRootSentence() {
+<span class="fc" id="L64">    return this.rootSentence;</span>
+  }
+
+  public void setRootSentence(Relation relation) {
+<span class="fc" id="L68">    this.rootSentence = relation;</span>
+<span class="fc" id="L69">  }</span>
+
+  public boolean getSpecialRoot() {
+<span class="nc" id="L72">    return this.specialRoot;</span>
+  }
+
+  public void setSpecialRoot(boolean value) {
+<span class="nc" id="L76">    this.specialRoot = value;</span>
+<span class="nc" id="L77">  }</span>
+
+  /**
+   * Limpiar las variables usadas despues de tratar una oracion
+   */
+  public void clear() {
+<span class="fc" id="L83">    this.num = 0;</span>
+<span class="fc" id="L84">    this.rootSentence = null;</span>
+<span class="fc" id="L85">    this.specialRoot = false;</span>
+<span class="fc" id="L86">    this.copulativeVerb = false;</span>
+<span class="fc" id="L87">    this.contextNodes.clear();</span>
+<span class="fc" id="L88">  }</span>
+
+  /**
+   * Buscar relacion que pueda ser el nodo raiz en caso de no haberlo encontrado al final de la
+   * oracion
+   * 
+   * @param arrayRelations
+   *          lista con todas las relaciones existentes en la oracion
+   * @return relacion sobre el nodo raiz o null
+   */
+  public Relation searchRootSpecial(ArrayList&lt;ArrayList&lt;Relation&gt;&gt; arrayRelations) {
+
+    /*
+     * la primera relacion que encuentre vacia y que sea un nombre (N) la toma como root de la
+     * oracion
+     */
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">    for (ArrayList&lt;Relation&gt; arrayList : arrayRelations) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">      for (Relation relation : arrayList) {</span>
+<span class="pc bpc" id="L106" title="1 of 4 branches missed.">        if (relation.getSecondIndex() == 0 &amp;&amp; relation.getSecondValue().isEmpty()) {</span>
+<span class="fc" id="L107">          relation.replaceRelation(</span>
+<span class="fc" id="L108">              new Relation(relation.getFirstIndex(), relation.getFirstValue(), 0, &quot;ROOT&quot;));</span>
+<span class="fc" id="L109">          relation.setRelation(&quot;root&quot;);</span>
+<span class="fc" id="L110">          relation.setRoot(true);// System.err.println(relation);</span>
+<span class="fc" id="L111">          return relation;</span>
+        }
+      }
+    }
+<span class="nc" id="L115">    return null;</span>
+  }
+
+  /**
+   * Comprobar si una relacion es el nodo raiz de la oracion
+   * 
+   * @param relation
+   *          relacion con la que se va a comparar
+   * @return true, si son iguales, o false, en caso contrario
+   */
+  public boolean isRoot(Relation relation) {
+
+<span class="nc bnc" id="L127" title="All 2 branches missed.">    if (relation.equals(rootSentence)) {</span>
+<span class="nc" id="L128">      return true;</span>
+    }
+
+<span class="nc" id="L131">    return false;</span>
+  }
+
+  /**
+   * Completar las relaciones que tienen vacio su segundo elemento con el nodo principal
+   * 
+   * @param relationNode
+   *          lista con todas las relaciones creadas
+   * @return lista con las relaciones completadas
+   */
+  public ArrayList&lt;Relation&gt; finalCompleteRelation(ArrayList&lt;ArrayList&lt;Relation&gt;&gt; relationNode) {
+
+<span class="fc" id="L143">    ArrayList&lt;Relation&gt; relations = new ArrayList&lt;&gt;();</span>
+
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">    if (!specialRoot) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">      for (ArrayList&lt;Relation&gt; array : relationNode) {</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        for (Relation relation : array) {</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">          if (relation.isSecondEmpty()) {</span>
+<span class="fc" id="L149">            relation.setSecondIndex(rootSentence.getFirstIndex());</span>
+<span class="fc" id="L150">            relation.setSecondValue(rootSentence.getFirstValue());</span>
+<span class="fc" id="L151">            relation.setRoot(false);</span>
+
+          }
+
+<span class="fc" id="L155">          relations.add(relation);</span>
+        }
+
+      }
+<span class="fc" id="L159">    } else {</span>
+
+<span class="nc bnc" id="L161" title="All 2 branches missed.">      for (ArrayList&lt;Relation&gt; array : relationNode) {</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">        for (Relation relation : array) {</span>
+<span class="nc bnc" id="L163" title="All 4 branches missed.">          if (relation.isSecondEmpty() &amp;&amp; !isRoot(relation)) {</span>
+<span class="nc" id="L164">            relation.setSecondIndex(rootSentence.getFirstIndex());</span>
+<span class="nc" id="L165">            relation.setSecondValue(rootSentence.getFirstValue());</span>
+<span class="nc" id="L166">            relation.setRoot(false);</span>
+<span class="nc" id="L167">            String field = fields.findField(relation.getFirstValue(), relation.getSecondValue(),</span>
+<span class="nc" id="L168">                contextNodes.lastElement());</span>
+<span class="nc" id="L169">            relation.setRelation(field);</span>
+          }
+<span class="nc" id="L171">          relations.add(relation);</span>
+        }
+      }
+    }
+
+<span class="fc" id="L176">    return relations;</span>
+
+  }
+
+  /**
+   * Completar las relaciones con el nodo raiz del subarbol corespondiente
+   * 
+   * @param relationsNode
+   *          lista de relaciones a completar
+   */
+  public void completeRelation(ArrayList&lt;Relation&gt; relationsNode) {
+<span class="fc" id="L187">    Relation rootNode = null;</span>
+
+<span class="fc" id="L189">    if (!relationsNode.parallelStream().filter(p -&gt; p.getRoot()).collect(Collectors.toList())</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        .isEmpty()) {</span>
+
+      // obtener el nodo &quot;root&quot; de las relaciones obtenidas
+<span class="fc" id="L193">      rootNode = relationsNode.parallelStream().filter(p -&gt; p.getRoot())</span>
+<span class="fc" id="L194">          .collect(Collectors.toList()).get(0);</span>
+
+      // recorrer la lista de relaciones completandolas
+<span class="fc bfc" id="L197" title="All 2 branches covered.">      for (Relation relation : relationsNode) {</span>
+<span class="fc bfc" id="L198" title="All 4 branches covered.">        if (relation.isSecondEmpty() &amp;&amp; !relation.equals(rootNode)) { // un nodo &quot;root&quot; no se</span>
+          // completa consigo mismo
+<span class="fc" id="L200">          relation.setSecondIndex(rootNode.getFirstIndex());</span>
+<span class="fc" id="L201">          relation.setSecondValue(rootNode.getFirstValue());</span>
+<span class="fc" id="L202">          relation.setRoot(false);</span>
+
+          /*
+           * obtener la etiqueta para el par de elementos que forman la relacion en el contexto
+           * actual
+           */
+<span class="fc" id="L208">          String field = fields.findField(relation.getFirstValue(), relation.getSecondValue(),</span>
+<span class="fc" id="L209">              contextNodes.lastElement());</span>
+
+<span class="fc bfc" id="L211" title="All 2 branches covered.">          if (field != null) {</span>
+<span class="fc" id="L212">            relation.setRelation(field);</span>
+          }
+
+        }
+      }
+    }
+<span class="fc" id="L218">  }</span>
+
+  /**
+   * Comprueba si el verbo del nodo es copulativo y modifica el flag copultiveVerb
+   * 
+   * @param node
+   *          nodo que contiene el verbo y que se va a comprobar
+   */
+  public void isCopulativeVerb(Node node) {
+
+<span class="fc bfc" id="L228" title="All 2 branches covered.">    for (String s : getCopulativeVerbs()) {</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">      if (node.getValue().substring(0, node.getValue().length() - 2).toLowerCase().equals(s)) {</span>
+<span class="fc" id="L230">        copulativeVerb = true;</span>
+<span class="fc" id="L231">        break;</span>
+      } else {
+<span class="fc" id="L233">        copulativeVerb = false;</span>
+      }
+    }
+<span class="fc" id="L236">  }</span>
+
+  /**
+   * Crear relacion a partir de un nodo
+   * 
+   * @param node
+   *          nodo a partir del cual se creara la relacion
+   * @return la relacion creada para el nodo
+   */
+  public Relation createRelation(Node node) {
+<span class="fc" id="L246">    Relation relation = new Relation(num, node.getValue(), 0, &quot;&quot;);</span>
+
+<span class="fc bfc" id="L248" title="All 4 branches covered.">    if (((node.getFather().getKey().equals(&quot;ADJP_ATTR&quot;) &amp;&amp; node.getKey().contains(&quot;ADJ&quot;))</span>
+<span class="fc bfc" id="L249" title="All 4 branches covered.">        || (node.getFather().getKey().equals(&quot;NPATTR&quot;) &amp;&amp; (node.getKey().equals(&quot;N&quot;)</span>
+<span class="fc bfc" id="L250" title="All 4 branches covered.">            || node.getKey().equals(&quot;NP&quot;) || node.getKey().equals(&quot;NPR&quot;))))</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        &amp;&amp; copulativeVerb) { // comprobar si es root por oracion copulativa</span>
+
+<span class="fc" id="L253">      relation.setRoot(true);</span>
+
+      /*
+       * verbo root de la oracion se completa la relacion indicando que esta se establece con un
+       * elemento que indica que es el nodo principal de la oracion
+       */
+<span class="fc bfc" id="L259" title="All 2 branches covered.">      if (rootSentence == null) {</span>
+<span class="fc" id="L260">        relation.setSecondIndex(0);</span>
+<span class="fc" id="L261">        relation.setSecondValue(&quot;ROOT&quot;);</span>
+<span class="fc" id="L262">        relation.setRelation(&quot;root&quot;);</span>
+<span class="fc" id="L263">        rootSentence = new Relation(relation.getFirstIndex(), relation.getFirstValue(),</span>
+<span class="fc" id="L264">            relation.getSecondIndex(), relation.getSecondValue());</span>
+<span class="fc" id="L265">        rootSentence.setRelation(&quot;root&quot;);</span>
+      }
+
+<span class="pc bpc" id="L268" title="1 of 4 branches missed.">    } else if (node.getKey().equals(&quot;N&quot;) || node.getKey().equals(&quot;NP&quot;)</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">        || node.getKey().equals(&quot;NPR&quot;)) {</span>
+<span class="fc" id="L270">      relation.setRoot(true);</span>
+<span class="fc bfc" id="L271" title="All 4 branches covered.">    } else if (node.getKey().equals(&quot;DATE&quot;) &amp;&amp; node.getFather().getKey().equals(&quot;DATE&quot;)) {</span>
+<span class="fc" id="L272">      relation.setRoot(true);</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">    } else if (node.getKey().equals(&quot;V&quot;) </span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        &amp;&amp; ((node.getFather().getKey().contains(&quot;VPTENSED&quot;)) // verbo simple</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        || (node.getFather().getKey().contains(&quot;VPUNTENSED&quot;)) // clausulas subordinadas</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">        || node.getFather().getKey().equals(&quot;V&quot;) // verbo compuesto &quot;ha hecho&quot;</span>
+        )) {
+
+<span class="fc" id="L279">      isCopulativeVerb(node); // comprobar si el verbo es copulativo</span>
+
+<span class="fc bfc" id="L281" title="All 2 branches covered.">      if (!copulativeVerb) {</span>
+<span class="fc" id="L282">        relation.setRoot(true);</span>
+      }
+
+<span class="fc bfc" id="L285" title="All 6 branches covered.">      if (rootSentence == null &amp;&amp; contextNodes.contains(&quot;VPTENSED&quot;) &amp;&amp; !copulativeVerb) { // verbo</span>
+        // root de
+        // la
+        // oracion
+        /*
+         * se completa la relacion indicando que esta se establece con un elemento que indica que es
+         * el nodo principal de la oracion
+         */
+<span class="fc" id="L293">        relation.setSecondIndex(0);</span>
+<span class="fc" id="L294">        relation.setSecondValue(&quot;ROOT&quot;);</span>
+<span class="fc" id="L295">        relation.setRelation(&quot;root&quot;);</span>
+<span class="fc" id="L296">        rootSentence = new Relation(relation.getFirstIndex(), relation.getFirstValue(),</span>
+<span class="fc" id="L297">            relation.getSecondIndex(), relation.getSecondValue());</span>
+<span class="fc" id="L298">        rootSentence.setRelation(&quot;root&quot;);</span>
+<span class="fc bfc" id="L299" title="All 4 branches covered.">      } else if (rootSentence == null &amp;&amp; copulativeVerb) {</span>
+<span class="fc" id="L300">        relation.setRoot(false);</span>
+      }
+
+<span class="fc" id="L303">    } else {</span>
+<span class="fc" id="L304">      relation.setRoot(false);</span>
+    }
+
+<span class="fc" id="L307">    return relation;</span>
+  }
+
+  /**
+   * Comprobar si un nodo es terminal dentro del arbol
+   * 
+   * @param node
+   *          nodo a comprobar
+   * @return true, en caso de serlo o false, en caso contrario
+   */
+  public boolean isTerminal(Node node) {
+
+<span class="fc bfc" id="L319" title="All 2 branches covered.">    if (node.getNChildrens() == 0) {</span>
+<span class="fc" id="L320">      return true;</span>
+    } else {
+<span class="fc" id="L322">      return false;</span>
+    }
+  }
+
+  /**
+   * Funcion recursiva que recorre el arbol para crear la lista de relaciones
+   * 
+   * @param node
+   *          nodo del subarbol a partir del cual se creara una lista de relaciones
+   * @return lista con las relaciones creadas
+   */
+  public ArrayList&lt;Relation&gt; recursiveFunction(Node node) {
+
+<span class="fc" id="L335">    ArrayList&lt;Relation&gt; relations = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L337" title="All 2 branches covered.">    if (isTerminal(node)) { // se compueba si es terminal</span>
+<span class="pc bpc" id="L338" title="1 of 4 branches missed.">      if (!node.getKey().contains(&quot;NPSUBJ&quot;) &amp;&amp; !node.getKey().contains(&quot;NPATTR&quot;)) { // se descartan</span>
+        // arboles
+        // vacios
+<span class="fc" id="L341">        num++;</span>
+<span class="fc" id="L342">        relations.add(createRelation(node));</span>
+      }
+<span class="fc" id="L344">    } else { // si no es terminal se guarda el contexto</span>
+<span class="fc" id="L345">      contextNodes.push(node.getKey());</span>
+    }
+
+<span class="fc bfc" id="L348" title="All 2 branches covered.">    for (Node child : node.getChildrens()) { // se recorren los hijos del nodo actual</span>
+
+<span class="fc bfc" id="L350" title="All 2 branches covered.">      if (isTerminal(child)) {</span>
+<span class="fc bfc" id="L351" title="All 4 branches covered.">        if (!child.getKey().contains(&quot;NPSUBJ&quot;) &amp;&amp; !child.getKey().contains(&quot;NPATTR&quot;)) {</span>
+<span class="fc" id="L352">          num++;</span>
+<span class="fc" id="L353">          relations.add(createRelation(child)); // se crea la relacion asociada al nodo terminal</span>
+        }
+<span class="fc" id="L355">      } else {</span>
+        // se comprueba si el nodo pertenece a una clausula subordinada
+<span class="fc bfc" id="L357" title="All 2 branches covered.">        if (child.getKey().startsWith(&quot;CL_&quot;)) {</span>
+          /*
+           * se llama al metodo recursivo que recorrera la subordinada desde el nodo hijo que lo
+           * contiene
+           */
+<span class="fc" id="L362">          relations.addAll(recursiveFunctionSubordinate(child));</span>
+<span class="fc" id="L363">        } else {</span>
+          // se llama al mismo metodo desde el nodo hijo no terminal
+<span class="fc" id="L365">          relations.addAll(recursiveFunction(child));</span>
+        }
+      }
+    }
+
+<span class="fc" id="L370">    completeRelation(relations); // se completan las relaciones del arbol actual</span>
+
+<span class="fc bfc" id="L372" title="All 2 branches covered.">    if (!contextNodes.isEmpty()) { // eliminar el contexto de la pila</span>
+<span class="fc" id="L373">      contextNodes.pop();</span>
+    }
+<span class="fc" id="L375">    return relations;</span>
+  }
+
+  /**
+   * Funcion recursiva que recorre el arbol para crear la lista de relaciones
+   * 
+   * @param node
+   *          nodo del subarbol a partir del cual se creará una lista de relaciones
+   * @return lista con las relaciones creadas
+   */
+  public ArrayList&lt;Relation&gt; recursiveFunctionSubordinate(Node node) {
+
+<span class="fc" id="L387">    ArrayList&lt;Relation&gt; relations = new ArrayList&lt;&gt;();</span>
+
+<span class="pc bpc" id="L389" title="1 of 2 branches missed.">    if (isTerminal(node)) {</span>
+<span class="nc bnc" id="L390" title="All 4 branches missed.">      if (!node.getKey().contains(&quot;NPSUBJ&quot;) &amp;&amp; !node.getKey().contains(&quot;NPATTR&quot;)) {</span>
+<span class="nc" id="L391">        num++;</span>
+<span class="nc" id="L392">        relations.add(createRelation(node));</span>
+
+      }
+<span class="nc" id="L395">    } else {</span>
+<span class="fc" id="L396">      contextNodes.push(node.getKey());</span>
+    }
+
+<span class="fc bfc" id="L399" title="All 2 branches covered.">    for (Node child : node.getChildrens()) {</span>
+
+<span class="fc bfc" id="L401" title="All 2 branches covered.">      if (isTerminal(child)) {</span>
+<span class="pc bpc" id="L402" title="1 of 4 branches missed.">        if (!child.getKey().contains(&quot;NPSUBJ&quot;) &amp;&amp; !child.getKey().contains(&quot;NPATTR&quot;)) {</span>
+
+<span class="fc" id="L404">          num++;</span>
+<span class="fc" id="L405">          relations.add(createRelation(child));</span>
+
+        }
+
+<span class="fc" id="L409">      } else {</span>
+
+<span class="fc" id="L411">        relations.addAll(recursiveFunctionSubordinate(child));</span>
+      }
+
+    }
+<span class="fc" id="L415">    completeRelation(relations);</span>
+
+<span class="fc" id="L417">    contextNodes.pop();</span>
+<span class="fc" id="L418">    return relations;</span>
+
+  }
+
+  /**
+   * Crea un arbol a partir de una cadena
+   * 
+   * @author Borja Colmerajero Garcia (TFG del 2015-2016)
+   * @param st
+   *          cadena que contiene el arbol
+   * @return arbol creado a partir de la cadena
+   */
+  public Tree createTree(String st) {
+<span class="fc" id="L431">    Tree tree = new Tree();</span>
+<span class="fc" id="L432">    ArrayList&lt;Node&gt; nodes = new ArrayList&lt;Node&gt;();</span>
+<span class="fc" id="L433">    Stack&lt;Node&gt; stack = new Stack&lt;Node&gt;();</span>
+<span class="fc" id="L434">    String value = new String();</span>
+<span class="fc" id="L435">    Boolean isValue = false;</span>
+<span class="fc" id="L436">    Boolean insertValue = false;</span>
+
+<span class="fc" id="L438">    String[] s = st.split(&quot;\\s&quot;);</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">    for (int i = 0; i &lt; s.length; i++) {</span>
+      /* Para evitar iteraciones vacias */
+<span class="fc bfc" id="L441" title="All 2 branches covered.">      if (s[i].equals(&quot;&quot;)) {</span>
+<span class="fc" id="L442">        continue;</span>
+      }
+
+      /* Comienzo de nodo */
+<span class="fc bfc" id="L446" title="All 2 branches covered.">      if (s[i].startsWith(&quot;(&quot;)) {</span>
+        /* Crear nodo y guardar clave */
+<span class="fc" id="L448">        Node node = new Node();</span>
+<span class="fc" id="L449">        String key = s[i].replace(&quot;(&quot;, &quot;&quot;);</span>
+<span class="fc" id="L450">        key = key.replace(&quot;)&quot;, &quot;&quot;);</span>
+<span class="fc" id="L451">        node.setKey(key);</span>
+
+        /* Incluir a la lista de nodos */
+<span class="fc" id="L454">        nodes.add(node);</span>
+
+        /* Guardar los hijos */
+<span class="fc bfc" id="L457" title="All 2 branches covered.">        if (!stack.isEmpty()) {</span>
+          /* Nodos hijos del arbol */
+<span class="fc" id="L459">          Node father = stack.pop();</span>
+<span class="fc" id="L460">          father.addChild(node);</span>
+<span class="fc" id="L461">          node.setFather(father);</span>
+<span class="fc" id="L462">          stack.push(father);</span>
+        }
+
+        /* Meter a la pila */
+<span class="fc" id="L466">        stack.push(node);</span>
+      }
+
+<span class="fc bfc" id="L469" title="All 2 branches covered.">      if (s[i].startsWith(&quot;\&quot;&quot;)) {</span>
+        /* Valor para asignar */
+<span class="fc" id="L471">        value = s[i].replaceFirst(&quot;\&quot;&quot;, &quot;&quot;);</span>
+<span class="fc" id="L472">        isValue = false;</span>
+      }
+
+      /* Si el valor no ha terminado de leerse */
+<span class="fc bfc" id="L476" title="All 2 branches covered.">      if (isValue) {</span>
+<span class="fc" id="L477">        value += &quot; &quot; + s[i];</span>
+      }
+
+      /* Si termina el valor */
+<span class="fc bfc" id="L481" title="All 2 branches covered.">      if (value.contains(&quot;\&quot;&quot;)) {</span>
+<span class="fc" id="L482">        value = value.replace(&quot;)&quot;, &quot;&quot;);</span>
+<span class="fc" id="L483">        value = value.replace(&quot;\&quot;&quot;, &quot;&quot;);</span>
+
+        /* Si el valor es un ')' */
+<span class="fc bfc" id="L486" title="All 2 branches covered.">        if (value.contentEquals(&quot;/PUNCT&quot;)) {</span>
+<span class="fc" id="L487">          value = &quot;)&quot; + value;</span>
+        }
+
+<span class="fc" id="L490">        insertValue = true;</span>
+<span class="fc" id="L491">        isValue = false;</span>
+<span class="fc" id="L492">      } else {</span>
+<span class="fc" id="L493">        isValue = true;</span>
+      }
+
+      /* Meter el valor calculado anteriormente */
+<span class="fc bfc" id="L497" title="All 2 branches covered.">      if (insertValue) {</span>
+<span class="fc" id="L498">        Node nodoActual = stack.pop();</span>
+<span class="fc" id="L499">        nodoActual.setValue(value);</span>
+<span class="fc" id="L500">        stack.push(nodoActual);</span>
+<span class="fc" id="L501">        insertValue = false;</span>
+<span class="fc" id="L502">        value = new String();</span>
+      }
+
+      /* Terminar nodo (pueden ser varios a la vez) sacar de la pila */
+<span class="fc bfc" id="L506" title="All 2 branches covered.">      if (s[i].endsWith(&quot;)&quot;)) {</span>
+<span class="fc" id="L507">        int idx = s[i].lastIndexOf(&quot;)&quot;);</span>
+<span class="fc" id="L508">        int j = 0;</span>
+<span class="fc bfc" id="L509" title="All 2 branches covered.">        while (s[i].charAt(idx - j) == ')') {</span>
+<span class="fc" id="L510">          j++;</span>
+<span class="fc" id="L511">          stack.pop();</span>
+        }
+      }
+    }
+
+    /*
+     * Guardar el nodo raiz ROOT para comparaciones con la salida (pone ROOT por defecto)
+     */
+<span class="fc" id="L519">    Node root = new Node();</span>
+<span class="fc" id="L520">    root.setKey(&quot;ROOT&quot;);</span>
+<span class="fc" id="L521">    root.addChild(nodes.get(0));</span>
+<span class="fc" id="L522">    nodes.add(0, root);</span>
+<span class="fc" id="L523">    tree.setRoot(root);</span>
+
+    /* Guardar los nodos del arbol, y contruye el arbol */
+<span class="fc" id="L526">    tree.setNodes(nodes);</span>
+
+    /* Comprobar si esta bien balanceado (Si no error) */
+<span class="fc bfc" id="L529" title="All 2 branches covered.">    if (!stack.isEmpty()) {</span>
+<span class="fc" id="L530">      return null;</span>
+    }
+
+<span class="fc" id="L533">    return tree;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>PrincipalMain (25-jun-2017 0:47:16)</div></body></html>

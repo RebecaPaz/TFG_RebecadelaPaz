@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>FieldRelation.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">PrincipalMain (25-jun-2017 0:47:16)</a> &gt; <a href="../../index.html" class="el_group">RebecadelaPaz</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Field</a> &gt; <span class="el_source">FieldRelation.java</span></div><h1>FieldRelation.java</h1><pre class="source lang-java linenums">package Field;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import Files.ReadFile;
+
+/**
+ * Clase FieldRelation
+ *
+ * &lt;p&gt;Maneja un listado de etiquetas
+ * 
+ * @author Rebeca de la Paz Gonz&amp;aacute;lez
+ *
+ * @param &lt;A&gt;
+ *          parametro de tipo generico
+ * @param &lt;B&gt;
+ *          parametro de tipo generico
+ */
+public class FieldRelation&lt;A, B&gt; {
+
+<span class="pc" id="L24">  private ArrayList&lt;Field&lt;A, B&gt;&gt; fieldsRelations = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L26">  public FieldRelation() {</span>
+
+<span class="nc" id="L28">  }</span>
+
+<span class="fc" id="L30">  public FieldRelation(String filename) throws Exception {</span>
+<span class="fc" id="L31">    setFieldsRelations(createFieldRelation(filename));</span>
+<span class="fc" id="L32">  }</span>
+
+  public ArrayList&lt;Field&lt;A, B&gt;&gt; getFieldsRelations() {
+<span class="nc" id="L35">    return this.fieldsRelations;</span>
+  }
+
+  public void setFieldsRelations(ArrayList&lt;Field&lt;A, B&gt;&gt; fieldRelations) {
+<span class="fc" id="L39">    this.fieldsRelations.addAll(fieldRelations);</span>
+<span class="fc" id="L40">  }</span>
+
+  private ArrayList&lt;Field&lt;A, B&gt;&gt; createFieldRelation(String filename) throws Exception {
+<span class="fc" id="L43">    ReadFile&lt;A, B&gt; read = new ReadFile&lt;&gt;();</span>
+<span class="fc" id="L44">    return read.readExcel(filename);</span>
+  }
+
+  /**
+   * Busca una etiqueta en el listado a partir de dos elementos y su contexto
+   * 
+   * @param elem1
+   *          primer elemento de la relacion
+   * @param elem2
+   *          segundo elemento de la relacion
+   * @param context
+   *          contexto en el que se encuentran los elementos
+   * @return cadena que contiene la etiqueta asociada al par de elementos dentro del contexto
+   */
+  public String findField(String elem1, String elem2, String context) {
+
+<span class="fc" id="L60">    String[] string1 = elem1.split(&quot;/&quot;);</span>
+<span class="fc" id="L61">    String[] string2 = elem2.split(&quot;/&quot;);</span>
+    final int index1;
+    final int index2;
+    
+<span class="fc bfc" id="L65" title="All 2 branches covered.">    if (string1.length &gt; 1) {</span>
+<span class="fc" id="L66">      index1 = 1; </span>
+<span class="fc" id="L67">    } else {</span>
+<span class="fc" id="L68">      index1 = 0;</span>
+    }
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">    if (string2.length &gt; 1) {</span>
+<span class="fc" id="L72">      index2 = 1;</span>
+<span class="fc" id="L73">    } else {</span>
+<span class="fc" id="L74">      index2 = 0;</span>
+    }
+    
+<span class="fc" id="L77">    Supplier&lt;List&lt;Field&lt;A, B&gt;&gt;&gt; supplier = () -&gt; new ArrayList&lt;Field&lt;A, B&gt;&gt;();</span>
+
+<span class="fc" id="L79">    List&lt;Field&lt;A, B&gt;&gt; streamFields = fieldsRelations.stream()</span>
+<span class="fc" id="L80">        .filter(p -&gt; p.getElements().equals(new Tuple&lt;&gt;(string1[index1], string2[index2])))</span>
+<span class="fc" id="L81">        .collect(Collectors.toCollection(supplier));</span>
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">    if (streamFields.size() == 0) {</span>
+<span class="fc" id="L84">      return null;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">    } else if (streamFields.size() &gt; 1) {</span>
+<span class="fc" id="L86">      return streamFields.stream().filter(p -&gt; p.getContext().equals(context))</span>
+<span class="fc" id="L87">          .map(p -&gt; p.getField()).collect(Collectors.joining());</span>
+    } else {
+<span class="fc" id="L89">      return streamFields.stream().map(p -&gt; p.getField()).collect(Collectors.joining());</span>
+    }
+
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>PrincipalMain (25-jun-2017 0:47:16)</div></body></html>

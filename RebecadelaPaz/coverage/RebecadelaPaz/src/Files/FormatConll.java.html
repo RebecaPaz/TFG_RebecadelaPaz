@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>FormatConll.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">PrincipalMain (25-jun-2017 0:47:16)</a> &gt; <a href="../../index.html" class="el_group">RebecadelaPaz</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Files</a> &gt; <span class="el_source">FormatConll.java</span></div><h1>FormatConll.java</h1><pre class="source lang-java linenums">package Files;
+
+import Utils.Relation;
+
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+
+/**
+ * Clase FormatConll
+ *
+ * &lt;p&gt;Implementa la interfaz Format para el fichero de salida en formato CoNLL
+ * 
+ * @author Rebeca de la Paz Gonz&amp;aacute;lez
+ *
+ */
+<span class="fc" id="L19">public class FormatConll implements Format {</span>
+
+<span class="fc" id="L21">  private BufferedWriter fw = null;// descriptor de escritura</span>
+  private static final String END = &quot;\n&quot;; // token para el fin de linea
+  private static final String TOKEN_LIMIT = &quot;;&quot;; // token para hacer de separador
+  private static final String TOKEN_EMPTY = &quot;-&quot;; // token para rellenar en campos vacios
+
+  /**
+   * Transforma la relacion a una lista compuesta por todos sus elementos
+   * 
+   * @param relation
+   *          relacion que se va a transformar
+   * @return lista de strings con los elementos que componen la relacion
+   */
+  public ArrayList&lt;String&gt; transformRelation(Relation relation) {
+
+<span class="fc" id="L35">    ArrayList&lt;String&gt; ret = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L36">    String[] value = relation.getFirstValue().split(&quot;/&quot;);</span>
+
+<span class="fc" id="L38">    ret.add(String.valueOf(relation.getFirstIndex()));</span>
+<span class="fc" id="L39">    ret.add(value[0]);</span>
+<span class="fc" id="L40">    ret.add(TOKEN_EMPTY);</span>
+    
+<span class="fc bfc" id="L42" title="All 2 branches covered.">    if (value.length == 1) {</span>
+<span class="fc" id="L43">      ret.add(value[0]);</span>
+<span class="fc" id="L44">      ret.add(value[0]);</span>
+<span class="fc" id="L45">    } else {</span>
+<span class="fc" id="L46">      ret.add(value[1]);</span>
+<span class="fc" id="L47">      ret.add(value[1]);</span>
+    }
+    
+<span class="fc" id="L50">    ret.add(TOKEN_EMPTY);</span>
+<span class="fc" id="L51">    ret.add(String.valueOf(relation.getSecondIndex()));</span>
+<span class="fc" id="L52">    ret.add(relation.getRelation());</span>
+    // ret.add(&quot;&quot;);
+<span class="fc" id="L54">    return ret;</span>
+  }
+
+  /**
+   * Escribir fichero en formato CoNLL
+   * 
+   * @param relations
+   *          relaciones a escribir en el fichero
+   * @throws Exception
+   *           excepcion en caso de producirse algun error al escribir el fichero
+   */
+  public void writeFormatFile(ArrayList&lt;Relation&gt; relations) throws Exception {
+
+<span class="fc" id="L67">    boolean endSentence = false;</span>
+<span class="fc" id="L68">    ArrayList&lt;String&gt; array = new ArrayList&lt;&gt;();</span>
+
+    /*
+     * transformar cada una de las relaciones a una lista de strings
+     */
+<span class="fc bfc" id="L73" title="All 2 branches covered.">    for (Relation relation : relations) {</span>
+<span class="fc" id="L74">      array.clear();</span>
+
+<span class="fc" id="L76">      array.addAll(this.transformRelation(relation));</span>
+
+<span class="fc bfc" id="L78" title="All 2 branches covered.">      if (relations.indexOf(relation) == relations.size() - 1) {</span>
+<span class="fc" id="L79">        endSentence = true;</span>
+<span class="fc" id="L80">      } else {</span>
+<span class="fc" id="L81">        endSentence = false;</span>
+      }
+
+<span class="fc bfc" id="L84" title="All 2 branches covered.">      for (String string : array) { // escribir en el fichero la relacion</span>
+<span class="fc" id="L85">        fw.write(string);</span>
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (array.indexOf(string) != array.size() - 1) {</span>
+<span class="fc" id="L88">          fw.write(TOKEN_LIMIT);</span>
+<span class="fc" id="L89">        } else {</span>
+<span class="fc" id="L90">          fw.write(END);</span>
+        }
+      }
+
+<span class="fc bfc" id="L94" title="All 2 branches covered.">      if (endSentence) {</span>
+<span class="fc" id="L95">        fw.write(END);</span>
+      }
+    }
+
+<span class="fc" id="L99">  }</span>
+
+  /**
+   * Abrir el descriptor del fichero de escritura
+   * 
+   * @throws Exception
+   *           excepcion en caso de producirse algun error al abrir el fichero
+   */
+  public void openFormatFile() throws Exception {
+<span class="fc" id="L108">    fw = new BufferedWriter(new OutputStreamWriter(</span>
+<span class="fc" id="L109">        new FileOutputStream(&quot;treebank_dependenciesCoNLL.csv&quot;), &quot;ISO-8859-1&quot;));</span>
+<span class="fc" id="L110">  }</span>
+
+  /**
+   * Cerrar el descriptor del fichero de escritura
+   * 
+   * @throws Exception
+   *           excepcion en caso de producirse algun error al cerrar el fichero
+   */
+  public void closeFormatFile() throws Exception {
+<span class="fc" id="L119">    fw.close();</span>
+<span class="fc" id="L120">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>PrincipalMain (25-jun-2017 0:47:16)</div></body></html>

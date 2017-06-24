@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">PrincipalMain (25-jun-2017 0:47:16)</a> &gt; <a href="../../index.html" class="el_group">RebecadelaPaz</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Principal</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">package Principal;
+
+import Field.FieldRelation;
+import Files.FormatConll;
+import Files.FormatStanford;
+import Files.ReadFile;
+import Utils.Node;
+import Utils.Relation;
+import Utils.Tree;
+
+import java.util.ArrayList;
+
+/**
+ * Clase Main
+ * 
+ * &lt;p&gt;Contiene los metodos principales de ejecucion del programa
+ * 
+ * @author Rebeca de la Paz Gonz&amp;aacute;lez
+ *
+ * @param &lt;A&gt; parametro de tipo generico
+ * @param &lt;B&gt; parametro de tipo generico
+ */
+<span class="nc" id="L23">public class Main&lt;A, B&gt; {</span>
+
+<span class="fc" id="L25">  static FormatStanford formatStanford = new FormatStanford();</span>
+<span class="fc" id="L26">  static FormatConll formatCoNLL = new FormatConll();</span>
+<span class="fc" id="L27">  static FieldRelation&lt;String, String&gt; fieldRelation = null;</span>
+
+  /**
+   * Metodo encargado de la lectura del fichero de relaciones y de llamar a la funcion que hara la
+   * transformacion a dependencias
+   * 
+   * @param args
+   *          parametros con el nombre de los ficheros de entraada a leer y el formato de salida del
+   *          treebank de dependencias
+   * @throws Exception
+   *           excepcion en caso de error
+   */
+  public static &lt;A, B&gt;  void main(String[] args) throws Exception {
+
+<span class="fc" id="L41">    String fileFields = &quot;&quot;;</span>
+<span class="fc" id="L42">    String fileTreebank = &quot;&quot;;</span>
+<span class="fc" id="L43">    char output = 0;</span>
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">    for (int i = 0; i &lt; args.length; i++) {</span>
+
+<span class="pc bpc" id="L47" title="2 of 6 branches missed.">      if (args[i].equals(&quot;-s&quot;) || args[i].equals(&quot;-b&quot;) || args[i].equals(&quot;-c&quot;)) { // formato de</span>
+        // treebank de
+        // dependencias
+<span class="fc" id="L50">        output = args[i].charAt(1);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">      } else if (args[i].equals(&quot;-r&quot;)) { // fichero con etiquetas de relaciones</span>
+<span class="fc" id="L52">        fileFields = args[i + 1];</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">      } else if (args[i].equals(&quot;-t&quot;)) { // fichero con treebank de constituyentes</span>
+<span class="fc" id="L54">        fileTreebank = args[i + 1];</span>
+      }
+
+    }
+
+<span class="fc" id="L59">    fieldRelation = new FieldRelation&lt;String, String&gt;(fileFields);</span>
+
+<span class="fc" id="L61">    transform(output, fileTreebank);</span>
+
+<span class="fc" id="L63">  }</span>
+
+  /**
+   * Metodo de transformacion a dependencias
+   * 
+   * @param formatFile
+   *          formato del fichero de salida
+   * @param fileTreebank
+   *          fichero de entrada del treebank de constituyentes
+   * @throws Exception
+   *           excepcion en caso de error
+   */
+  public static void transform(char formatFile, String fileTreebank) throws Exception {
+
+<span class="fc" id="L77">    Tree tree = new Tree();</span>
+<span class="fc" id="L78">    Node node = new Node();</span>
+<span class="fc" id="L79">    ConstToDepend&lt;String, String&gt; dependencies = new ConstToDepend&lt;String, String&gt;();</span>
+<span class="fc" id="L80">    dependencies.setFieldsRelations(fieldRelation);</span>
+<span class="fc" id="L81">    ArrayList&lt;ArrayList&lt;Relation&gt;&gt; arrayRelations = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L82">    ReadFile&lt;String, String&gt; read = new ReadFile&lt;&gt;();</span>
+<span class="fc" id="L83">    ArrayList&lt;Relation&gt; relations = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L85">    dependencies.setFieldsRelations(fieldRelation);</span>
+
+<span class="fc" id="L87">    ArrayList&lt;String&gt; sentencesRead = read.readLisp(fileTreebank);</span>
+
+<span class="fc" id="L89">    open(formatFile);</span>
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">    for (int k = 0; k &lt; sentencesRead.size(); k++) {</span>
+
+<span class="fc" id="L93">      String s = sentencesRead.get(k);</span>
+
+      // tree = dependencies.createTree(s.trim());
+      try {
+<span class="fc" id="L97">        tree = dependencies.createTree(s.trim().replace(&quot;[&quot;, &quot;(&quot;).replace(&quot;]&quot;, &quot;)&quot;));</span>
+<span class="fc" id="L98">      } catch (Exception e) {</span>
+<span class="fc" id="L99">        System.out.println(e.getMessage());</span>
+      }
+
+<span class="fc bfc" id="L102" title="All 2 branches covered.">      if (tree == null) {</span>
+<span class="fc" id="L103">        clear(arrayRelations, relations, tree, node, dependencies, s);</span>
+<span class="fc" id="L104">      } else {</span>
+<span class="fc" id="L105">        node = tree.getRoot().getChildrens().get(0);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (int i = 0; i &lt; node.getNChildrens(); i++) {</span>
+
+<span class="fc bfc" id="L108" title="All 2 branches covered.">          if (node.getChildrens().get(i).getValue().equals(&quot;./PUNCT&quot;)) { // final del arbol</span>
+<span class="fc" id="L109">            arrayRelations.add(new ArrayList&lt;Relation&gt;());</span>
+
+            try {
+
+              /*
+               * caso especial para frases que no contienen un precdicado y por tanto tampoco verbo
+               * principal
+               */
+<span class="fc bfc" id="L117" title="All 2 branches covered.">              if (dependencies.getRootSentence() == null) {</span>
+<span class="fc" id="L118">                dependencies.setRootSentence(dependencies.searchRootSpecial(arrayRelations));</span>
+              }
+
+<span class="fc" id="L121">              Relation r = new Relation(dependencies.getNum() + 1,</span>
+<span class="fc" id="L122">                  node.getChildrens().get(i).getValue(),</span>
+<span class="fc" id="L123">                  dependencies.getRootSentence().getFirstIndex(),</span>
+<span class="fc" id="L124">                  dependencies.getRootSentence().getFirstValue());</span>
+
+<span class="fc" id="L126">              arrayRelations.get(i).add(r);</span>
+
+<span class="pc" id="L128">            } catch (NullPointerException e) {</span>
+<span class="nc" id="L129">              System.out.println(e.getMessage());</span>
+            }
+
+<span class="nc" id="L132">          } else {</span>
+<span class="fc" id="L133">            arrayRelations.add(new ArrayList&lt;Relation&gt;());</span>
+
+            /*
+             * guardar el listado de realaciones resultante de la llamada a la funcion recursiva
+             * para recorrer el arbol
+             */
+<span class="fc" id="L139">            arrayRelations.get(i).addAll(dependencies</span>
+<span class="fc" id="L140">                .recursiveFunction(node.getChildrens().get(i)));</span>
+          }
+        }
+
+        // completar las relaciones de los elementos principales que forman la oracion
+<span class="fc" id="L145">        relations = dependencies.finalCompleteRelation(arrayRelations);</span>
+
+<span class="fc" id="L147">        arrayRelations.removeIf(x -&gt; x.isEmpty());</span>
+
+<span class="pc bnc" id="L149" title="All 2 branches missed.">        relations.stream().filter(p -&gt; p.getRelation() == &quot;&quot;);</span>
+<span class="fc" id="L150">        System.out.println(relations);</span>
+<span class="fc" id="L151">        writeFile(relations, formatFile);</span>
+
+<span class="fc" id="L153">        clear(arrayRelations, relations, tree, node, dependencies, s);</span>
+
+      }
+
+    }
+
+<span class="fc" id="L159">    close(formatFile);</span>
+
+<span class="fc" id="L161">  }</span>
+
+  /**
+   * Abrir el fichero de salida del treebank
+   * 
+   * @param formatFile
+   *          formato de salida del treebank de dependencias
+   * @throws Exception
+   *           excepcion en caso de error al abrir el fichero
+   */
+  public static void open(char formatFile) throws Exception {
+
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">    if (formatFile == 's') {</span>
+<span class="nc" id="L174">      formatStanford.openFormatFile();</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">    } else if (formatFile == 'c') {</span>
+<span class="nc" id="L176">      formatCoNLL.openFormatFile();</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">    } else if (formatFile == 'b') {</span>
+<span class="fc" id="L178">      formatStanford.openFormatFile();</span>
+<span class="fc" id="L179">      formatCoNLL.openFormatFile();</span>
+<span class="fc" id="L180">    } else {</span>
+<span class="nc" id="L181">      throw new Exception(&quot;\n\nFormatos disponibles:\n\t-s Stanford\n\t-c CoNLL\n\t-b Ambos\n&quot;);</span>
+    }
+
+<span class="fc" id="L184">  }</span>
+
+  /**
+   * Escribir el fichero de salida del treebank
+   * 
+   * @param relations
+   *          listado de relaciones a escribir
+   * @param formatFile
+   *          formato de salida del treebank de dependencias
+   * @throws Exception
+   *           excepcion en caso de error al escribir el fichero
+   */
+  public static void writeFile(ArrayList&lt;Relation&gt; relations, char formatFile) throws Exception {
+
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">    if (formatFile == 's') {</span>
+<span class="nc" id="L199">      formatStanford.writeFormatFile(relations);</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">    } else if (formatFile == 'c') {</span>
+<span class="nc" id="L201">      formatCoNLL.writeFormatFile(relations);</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">    } else if (formatFile == 'b') {</span>
+<span class="fc" id="L203">      formatStanford.writeFormatFile(relations);</span>
+<span class="fc" id="L204">      formatCoNLL.writeFormatFile(relations);</span>
+<span class="fc" id="L205">    } else {</span>
+<span class="nc" id="L206">      throw new Exception(&quot;\n\nFormatos disponibles:\n\t-s Stanford\n\t-c CoNLL\n\t-b Ambos\n&quot;);</span>
+    }
+
+<span class="fc" id="L209">  }</span>
+
+  /**
+   * Cerrar el fichero de salida del treebank
+   * 
+   * @param formatFile
+   *          formato de salida del treebank de dependencias
+   * @throws Exception
+   *           excepcion en caso de error al cerrar el fichero
+   */
+  public static void close(char formatFile) throws Exception {
+
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">    if (formatFile == 's') {</span>
+<span class="nc" id="L222">      formatStanford.closeFormatFile();</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">    } else if (formatFile == 'c') {</span>
+<span class="nc" id="L224">      formatCoNLL.closeFormatFile();</span>
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">    } else if (formatFile == 'b') {</span>
+<span class="fc" id="L226">      formatStanford.closeFormatFile();</span>
+<span class="fc" id="L227">      formatCoNLL.closeFormatFile();</span>
+<span class="fc" id="L228">    } else {</span>
+<span class="nc" id="L229">      throw new Exception(&quot;\n\nFormatos disponibles:\n\t-s Stanford\n\t-c CoNLL\n\t-b Ambos\n&quot;);</span>
+    }
+<span class="fc" id="L231">  }</span>
+
+  /**
+   * Resetear estas variables para la siguiente oracion
+   * 
+   * @param arrayRelations
+   *          matriz de relaciones de la oracion
+   * @param relations
+   *          listado de relaciones de la oracion
+   * @param tree
+   *          arbol que forma la oracion
+   * @param node
+   *          un nodo de la oracion
+   * @param dependencies
+   *          dependencias que crearan las relaciones
+   * @param s
+   *          cadena de texto
+   */
+  public static void clear(ArrayList&lt;ArrayList&lt;Relation&gt;&gt; arrayRelations,
+      ArrayList&lt;Relation&gt; relations, Tree tree, Node node,
+      ConstToDepend&lt;String, String&gt; dependencies, String s) {
+
+<span class="fc" id="L253">    arrayRelations.clear();</span>
+<span class="fc" id="L254">    arrayRelations.removeAll(arrayRelations);</span>
+<span class="fc" id="L255">    relations.removeAll(relations);</span>
+<span class="fc" id="L256">    node.clearNode();</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">    if (tree != null) {</span>
+<span class="fc" id="L258">      tree.clearTree();</span>
+    }
+<span class="fc" id="L260">    dependencies.clear();</span>
+<span class="fc" id="L261">    s = &quot;&quot;;</span>
+<span class="fc" id="L262">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>PrincipalMain (25-jun-2017 0:47:16)</div></body></html>

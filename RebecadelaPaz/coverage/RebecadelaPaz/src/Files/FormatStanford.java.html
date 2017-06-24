@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>FormatStanford.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">PrincipalMain (25-jun-2017 0:47:16)</a> &gt; <a href="../../index.html" class="el_group">RebecadelaPaz</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Files</a> &gt; <span class="el_source">FormatStanford.java</span></div><h1>FormatStanford.java</h1><pre class="source lang-java linenums">package Files;
+
+import Utils.Relation;
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+
+/**
+ * Clase FormatStanford
+ * 
+ * &lt;p&gt;Implementa la interfaz Format para el fichero de salida en formato Stanford
+ * 
+ * @author Rebeca de la Paz Gonz&amp;aacute;lez
+ *
+ */
+<span class="fc" id="L18">public class FormatStanford implements Format {</span>
+
+<span class="fc" id="L20">  private BufferedWriter fw = null; // descriptor de escritura</span>
+  private static final String END = &quot;\n&quot;; // token para el fin de linea
+
+  /**
+   * Escribir fichero en formato Stanford
+   * 
+   * @param relations
+   *          relaciones a escribir en el fichero
+   * @throws Exception
+   *           excepcion en caso de producirse algun error al escribir el fichero
+   */
+  public void writeFormatFile(ArrayList&lt;Relation&gt; relations) throws Exception {
+
+<span class="fc" id="L33">    fw.write(END);</span>
+
+<span class="fc bfc" id="L35" title="All 2 branches covered.">    for (Relation relation : relations) {</span>
+<span class="fc" id="L36">      fw.write(relation.toString());</span>
+<span class="fc" id="L37">      fw.write(END);</span>
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">      if (relations.indexOf(relation) == relations.size() - 1) {</span>
+<span class="fc" id="L40">        fw.write(END);</span>
+      }
+    }
+<span class="fc" id="L43">  }</span>
+
+  /**
+   * Abrir el descriptor del fichero de escritura
+   * 
+   * @throws Exception
+   *           excepcion en caso de producirse algun error al abrir el fichero
+   */
+  public void openFormatFile() throws Exception {
+<span class="fc" id="L52">    fw = new BufferedWriter(new OutputStreamWriter(</span>
+<span class="fc" id="L53">        new FileOutputStream(&quot;treebank_dependenciesStanford.txt&quot;), &quot;ISO-8859-1&quot;));</span>
+<span class="fc" id="L54">  }</span>
+
+  /**
+   * Cerrar el descriptor del fichero de escritura
+   * 
+   * @throws Exception
+   *           excepcion en caso de producirse algun error al cerrar el fichero
+   */
+  public void closeFormatFile() throws Exception {
+<span class="fc" id="L63">    fw.close();</span>
+<span class="fc" id="L64">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>PrincipalMain (25-jun-2017 0:47:16)</div></body></html>

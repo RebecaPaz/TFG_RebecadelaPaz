@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ReadFile.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">PrincipalMain (25-jun-2017 0:47:16)</a> &gt; <a href="../../index.html" class="el_group">RebecadelaPaz</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Files</a> &gt; <span class="el_source">ReadFile.java</span></div><h1>ReadFile.java</h1><pre class="source lang-java linenums">package Files;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import Field.Field;
+import Field.Tuple;
+
+/**
+ * Clase ReadFile
+ * 
+ * &lt;p&gt;
+ * Lectura de los distintos tipos de ficheros
+ * 
+ * @author Rebeca de la Paz Gonz&amp;aacute;lez
+ *
+ * @param &lt;A&gt;
+ *          parametro de tipo generico
+ * @param &lt;B&gt;
+ *          parametro de tipo generico
+ */
+<span class="fc" id="L33">public class ReadFile&lt;A, B&gt; {</span>
+
+  /**
+   * Lectura de un fichero en formato excel
+   * 
+   * @param filename
+   *          nombre del fichero a leer
+   * @return listado de etiquetas
+   * @throws Exception
+   *           excepcion si se produce algun error
+   */
+  @SuppressWarnings({ &quot;unchecked&quot;, &quot;resource&quot; })
+  public ArrayList&lt;Field&lt;A, B&gt;&gt; readExcel(String filename) throws Exception {
+
+<span class="fc" id="L47">    ArrayList&lt;Field&lt;A, B&gt;&gt; fields = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L49">    File myFile = new File(filename);</span>
+<span class="fc" id="L50">    FileInputStream fis = new FileInputStream(myFile);</span>
+
+    // descriptor de fichero excel
+<span class="fc" id="L53">    XSSFWorkbook myWorkBook = new XSSFWorkbook(fis);</span>
+
+    // devuelve la primera hoja del exce,
+<span class="fc" id="L56">    XSSFSheet mySheet = myWorkBook.getSheetAt(0);</span>
+
+    // iterador de filas para la hoja seleccionada
+<span class="fc" id="L59">    Iterator&lt;Row&gt; rowIterator = mySheet.iterator();</span>
+
+    // recorrer la hoja
+<span class="fc bfc" id="L62" title="All 2 branches covered.">    while (rowIterator.hasNext()) {</span>
+
+<span class="fc" id="L64">      Row row = rowIterator.next();</span>
+<span class="fc" id="L65">      ArrayList&lt;String&gt; cellRow = new ArrayList&lt;&gt;();</span>
+      // iterador de columnas por cada fila
+<span class="fc" id="L67">      Iterator&lt;Cell&gt; cellIterator = row.cellIterator();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">      while (cellIterator.hasNext()) {</span>
+
+<span class="fc" id="L70">        Cell cell = cellIterator.next();</span>
+
+<span class="fc" id="L72">        cellRow.add(cell.getStringCellValue());</span>
+
+      }
+
+      Field&lt;A, B&gt; field;
+<span class="fc" id="L77">      Tuple&lt;String, String&gt; t = new Tuple&lt;&gt;(cellRow.get(0), cellRow.get(1));</span>
+
+<span class="fc bfc" id="L79" title="All 2 branches covered.">      if (cellRow.size() == 3) {</span>
+<span class="fc" id="L80">        field = (Field&lt;A, B&gt;) new Field&lt;String, String&gt;(t, &quot;&quot;, cellRow.get(2));</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">      } else if (cellRow.size() == 4) {</span>
+<span class="fc" id="L82">        field = (Field&lt;A, B&gt;) new Field&lt;String, String&gt;(t, cellRow.get(2), cellRow.get(3));</span>
+<span class="fc" id="L83">      } else {</span>
+<span class="nc" id="L84">        throw new Exception(&quot;Error, minimo debe haber tres columnas&quot;);</span>
+      }
+
+<span class="fc" id="L87">      fields.add(field);</span>
+
+    }
+
+<span class="fc" id="L91">    fis.close();</span>
+
+<span class="fc" id="L93">    return fields;</span>
+
+  }
+
+  /**
+   * Lectura del fichero en formato lisp transformando los arboles en cadenas de texto
+   * 
+   * @param filename
+   *          nombre del fichero a leer
+   * @return listado de oraciones como cadenas de texto
+   * @throws Exception
+   *           excepcion si se produce algun error
+   */
+  public ArrayList&lt;String&gt; readLisp(String filename) throws Exception {
+
+<span class="fc" id="L108">    BufferedReader fr = null;</span>
+<span class="fc" id="L109">    ArrayList&lt;String&gt; sentencesTree = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L110">    String sentence = &quot;&quot;;</span>
+<span class="fc" id="L111">    String line = &quot;&quot;;</span>
+
+    try {
+<span class="fc" id="L114">      fr = new BufferedReader(new InputStreamReader(new FileInputStream(filename), &quot;UTF-8&quot;));</span>
+<span class="pc" id="L115">    } catch (FileNotFoundException e) {</span>
+<span class="nc" id="L116">      e.printStackTrace();</span>
+<span class="nc" id="L117">    } catch (IOException e) {</span>
+<span class="nc" id="L118">      e.printStackTrace();</span>
+    }
+
+<span class="pc bfc" id="L121" title="All 2 branches covered.">    while ((line = fr.readLine()) != null) {</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">      if (line.isEmpty()) {</span>
+<span class="fc" id="L123">        continue;</span>
+      }
+
+<span class="fc" id="L126">      sentence += line;</span>
+
+<span class="fc bfc" id="L128" title="All 2 branches covered.">      if (line.contains(&quot;./PUNCT&quot;)) {</span>
+<span class="fc" id="L129">        sentencesTree.add(sentence);</span>
+<span class="fc" id="L130">        sentence = &quot;&quot;;</span>
+      }
+
+    }
+
+<span class="fc" id="L135">    fr.close();</span>
+<span class="fc" id="L136">    return sentencesTree;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>PrincipalMain (25-jun-2017 0:47:16)</div></body></html>

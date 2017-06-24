@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Node.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=2;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">PrincipalMain (25-jun-2017 0:47:16)</a> &gt; <a href="../../index.html" class="el_group">RebecadelaPaz</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">Utils</a> &gt; <span class="el_source">Node.java</span></div><h1>Node.java</h1><pre class="source lang-java linenums">/**
+ * @author Borja Colmenarejo Garc&amp;Iacute;a (TFG del 2015-2016)
+ */
+package Utils;
+
+import java.util.ArrayList;
+
+public class Node {
+<span class="fc" id="L9">	private String key = &quot;&quot;; /*</span>
+	 * Funcion que representa el nodo dentro de la
+	 * oracion
+	 */
+<span class="fc" id="L13">	private String value = &quot;&quot;; /*</span>
+	 * Palabra que representa el nodo, no siempre un
+	 * nodo contiene una palabra
+	 */
+<span class="fc" id="L17">	private ArrayList&lt;Node&gt; childrens = new ArrayList&lt;Node&gt;(); /*</span>
+									 * Nodos que cuelgan
+									 * de este
+									 */
+<span class="fc" id="L21">	private int nChildrens = 0; /* Numero de hijos que tiene el nodo */</span>
+<span class="fc" id="L22">	private Node father = null; /* Padre del nodo, si lo tiene null si no */</span>
+	private Boolean plural; /*
+							 * Marcar el genero del nodo (Para verbos (VP) y
+							 * sintagmas nominales (NP))
+							 */
+	
+	public void clearNode() {
+<span class="fc" id="L29">		this.father = null;</span>
+<span class="fc" id="L30">		this.key = &quot;&quot;;</span>
+<span class="fc" id="L31">		this.value = &quot;&quot;;</span>
+<span class="fc" id="L32">		this.childrens = null;</span>
+<span class="fc" id="L33">		this.nChildrens = 0;</span>
+<span class="fc" id="L34">		this.plural = false;</span>
+<span class="fc" id="L35">	}</span>
+	
+	/**
+	* Contructor de la clase
+	*/
+<span class="fc" id="L40">	public Node() {</span>
+<span class="fc" id="L41">		plural = false;</span>
+<span class="fc" id="L42">	}</span>
+	
+	/**
+	* Clave del nodo
+	* 
+	* @return devuelve la clave del nodo
+	*/
+	public String getKey() {
+<span class="fc" id="L50">		return key;</span>
+	}
+	
+	/**
+	* Valor del nodo
+	* 
+	* @return devuelve el valor del nodo
+	*/
+	public String getValue() {
+<span class="fc" id="L59">		return value;</span>
+	}
+	
+	/**
+	* Hijos del nodo
+	* 
+	* @return devuelve los hijos del nodo, Array vacio si no tiene ninguno
+	*/
+	public ArrayList&lt;Node&gt; getChildrens() {
+<span class="fc" id="L68">		return childrens;</span>
+	}
+	
+	/**
+	* Numero de hijos del nodo
+	* 
+	* @return devuelve el numero de hijos del nodo
+	*/
+	public int getNChildrens() {
+<span class="fc" id="L77">		return nChildrens;</span>
+	}
+	
+	/**
+	* Guarda la clave del nodo
+	* 
+	* @param key
+	*            clave para guardar
+	*/
+	public void setKey(String key) {
+<span class="fc" id="L87">		this.key = key;</span>
+<span class="fc" id="L88">	}</span>
+	
+	/**
+	* Guarda el valor de nodo
+	* 
+	* @param value
+	*            valor para guardar
+	*/
+	public void setValue(String value) {
+<span class="fc" id="L97">		this.value = value;</span>
+<span class="fc" id="L98">	}</span>
+	
+	/**
+	* Incluye un hijo
+	* 
+	* @param child
+	*            hijo para guardar
+	*/
+	public void addChild(Node child) {
+<span class="fc" id="L107">		childrens.add(child);</span>
+<span class="fc" id="L108">		nChildrens++;</span>
+<span class="fc" id="L109">	}</span>
+	
+	/**
+	* Rrepresentacion del nodo
+	* 
+	* @return representacion del nodo
+	*/
+	public String toString() {
+<span class="nc bnc" id="L117" title="All 2 branches missed.">		if (value != &quot;&quot;)</span>
+<span class="nc" id="L118">			return &quot;(&quot; + key + &quot; \&quot;&quot; + value + &quot;\&quot;)&quot;;</span>
+		else
+<span class="nc" id="L120">			return &quot;(&quot; + key + &quot;)&quot;;</span>
+	}
+	
+	/**
+	* Devuelve el nodo padre
+	* 
+	* @return nodo padre
+	*/
+	public Node getFather() {
+<span class="fc" id="L129">		return father;</span>
+	}
+	
+	/**
+	* Guarda el padre del nodo
+	* 
+	* @param father
+	*            padre del nodo
+	*/
+	public void setFather(Node father) {
+<span class="fc" id="L139">		this.father = father;</span>
+<span class="fc" id="L140">	}</span>
+	
+	/**
+	* Devuelve si es singular o plural
+	* 
+	* @return true si es plural, false si es singular
+	*/
+	public Boolean getPlural() {
+<span class="nc" id="L148">		return plural;</span>
+	}
+	
+	/**
+	* Guarda si es plural o singular
+	* 
+	* @param plural
+	*            true si es plural, false si es singular
+	*/
+	public void setPlural(Boolean plural) {
+<span class="nc" id="L158">		this.plural = plural;</span>
+<span class="nc" id="L159">	}	</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>PrincipalMain (25-jun-2017 0:47:16)</div></body></html>
