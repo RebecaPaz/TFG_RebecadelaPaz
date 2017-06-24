@@ -1,23 +1,24 @@
 package Principal;
 
+import Field.FieldRelation;
+import Utils.Node;
+import Utils.Relation;
+import Utils.Tree;
+
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import Field.*;
-import Utils.Node;
-import Utils.Relation;
-import Utils.Tree;
-
-
-
 /**
+ * Clase ConstToDepend
  * 
- * @author rebeca
+ * <p>Clase donde se realizan todas operaciones que conllevan la transformacion a dependencias
+ * 
+ * @author Rebeca de la Paz Gonz&aacute;lez
  *
- * @param <A>
- * @param <B>
+ * @param <A> parametro de tipo generico
+ * @param <B> parametro de tipo generico
  */
 public class ConstToDepend<A,B> {
   private int num = 0;  // contador sobre los elementos que forman una frase
@@ -28,25 +29,26 @@ public class ConstToDepend<A,B> {
   private Stack<String> contextNodes = new Stack<String>();
 
   /**
+   * Establecer las etiquetas de funcionalidad para las distintas relaciones
    * 
    * @param fieldsRelations
+   *          listado de etiquetas de las relaciones
    */
-  public void setFieldsRelations(FieldRelation<A,B> fieldsRelations) {
+  public void setFieldsRelations(FieldRelation<A, B> fieldsRelations) {
 
     this.fields = fieldsRelations;
 
   }
 
-
   /**
-   *  Obtener una lista de strings con las formas verbales de ser, estar y parecer
+   * Obtener una lista de strings con las formas verbales de ser, estar y parecer
+   * 
    * @return lista de string con las formas verbales
    */
   public ArrayList<String> getCopulativeVerbs() {
 
     ArrayList<String> enumNames = (ArrayList<String>) Stream.of(CopulativeVerbs.values())
-        .map(Enum::name)
-        .collect(Collectors.toList());
+        .map(Enum::name).collect(Collectors.toList());
     return enumNames;
   }
 
@@ -86,25 +88,26 @@ public class ConstToDepend<A,B> {
   }
 
   /**
-   * Buscar relacion que pueda ser el nodo raiz en caso de no haberlo encontrado 
-   * al final de la oracion
-   * @param arrayRelations lista con todas las relaciones existentes en la oracion
+   * Buscar relacion que pueda ser el nodo raiz en caso de no haberlo encontrado al final de la
+   * oracion
+   * 
+   * @param arrayRelations
+   *          lista con todas las relaciones existentes en la oracion
    * @return relacion sobre el nodo raiz o null
    */
   public Relation searchRootSpecial(ArrayList<ArrayList<Relation>> arrayRelations) {
 
     /*
-     * la primera relacion que encuentre vacia y que sea un nombre (N) 
-     * la toma como root de la oracion
+     * la primera relacion que encuentre vacia y que sea un nombre (N) la toma como root de la
+     * oracion
      */
     for (ArrayList<Relation> arrayList : arrayRelations) {
       for (Relation relation : arrayList) {
-        if (relation.getSecondIndex() == 0
-            && relation.getSecondValue().isEmpty()) {
-          relation.replaceRelation(new Relation(relation.getFirstIndex(), 
-              relation.getFirstValue(), 0, "ROOT"));
+        if (relation.getSecondIndex() == 0 && relation.getSecondValue().isEmpty()) {
+          relation.replaceRelation(
+              new Relation(relation.getFirstIndex(), relation.getFirstValue(), 0, "ROOT"));
           relation.setRelation("root");
-          relation.setRoot(true);//System.err.println(relation);
+          relation.setRoot(true);// System.err.println(relation);
           return relation;
         }
       }
@@ -112,12 +115,11 @@ public class ConstToDepend<A,B> {
     return null;
   }
 
-
-
-
   /**
    * Comprobar si una relacion es el nodo raiz de la oracion
-   * @param relation relacion con la que se va a comparar
+   * 
+   * @param relation
+   *          relacion con la que se va a comparar
    * @return true, si son iguales, o false, en caso contrario
    */
   public boolean isRoot(Relation relation) {
@@ -131,7 +133,9 @@ public class ConstToDepend<A,B> {
 
   /**
    * Completar las relaciones que tienen vacio su segundo elemento con el nodo principal
-   * @param relationNode lista con todas las relaciones creadas
+   * 
+   * @param relationNode
+   *          lista con todas las relaciones creadas
    * @return lista con las relaciones completadas
    */
   public ArrayList<Relation> finalCompleteRelation(ArrayList<ArrayList<Relation>> relationNode) {
@@ -145,29 +149,23 @@ public class ConstToDepend<A,B> {
             relation.setSecondIndex(rootSentence.getFirstIndex());
             relation.setSecondValue(rootSentence.getFirstValue());
             relation.setRoot(false);
-            /* 
-             * System.out.println("pila " + contextNodes);
-             * String field = fields.findField(relation.getFirstValue(), 
-             * relation.getSecondValue(), context_nodes.lastElement());
-             * relation.setRelation(field); 
-             */
+
           }
 
           relations.add(relation);
         }
 
-
       }
     } else {
-      //System.out.println("completar con special root");
+
       for (ArrayList<Relation> array : relationNode) {
         for (Relation relation : array) {
           if (relation.isSecondEmpty() && !isRoot(relation)) {
             relation.setSecondIndex(rootSentence.getFirstIndex());
             relation.setSecondValue(rootSentence.getFirstValue());
             relation.setRoot(false);
-            String field = fields.findField(relation.getFirstValue(), 
-                relation.getSecondValue(), contextNodes.lastElement());
+            String field = fields.findField(relation.getFirstValue(), relation.getSecondValue(),
+                contextNodes.lastElement());
             relation.setRelation(field);
           }
           relations.add(relation);
@@ -175,39 +173,41 @@ public class ConstToDepend<A,B> {
       }
     }
 
-    //System.out.println(relations);
     return relations;
 
   }
 
   /**
-   * Completar las relaciones con el nodo ra�z del subarbol corespondiente
-   * @param relationsNode lista de relaciones a completar
+   * Completar las relaciones con el nodo raiz del subarbol corespondiente
+   * 
+   * @param relationsNode
+   *          lista de relaciones a completar
    */
   public void completeRelation(ArrayList<Relation> relationsNode) {
     Relation rootNode = null;
 
-    if (!relationsNode.parallelStream()
-        .filter(p -> p.getRoot()).collect(Collectors.toList()).isEmpty()) {
+    if (!relationsNode.parallelStream().filter(p -> p.getRoot()).collect(Collectors.toList())
+        .isEmpty()) {
 
       // obtener el nodo "root" de las relaciones obtenidas
-      rootNode = relationsNode.parallelStream().filter(p -> 
-      p.getRoot()).collect(Collectors.toList()).get(0);
+      rootNode = relationsNode.parallelStream().filter(p -> p.getRoot())
+          .collect(Collectors.toList()).get(0);
 
       // recorrer la lista de relaciones completandolas
       for (Relation relation : relationsNode) {
-        if (relation.isSecondEmpty() 
-            && !relation.equals(rootNode)) { // un nodo "root" no se completa consigo mismo
+        if (relation.isSecondEmpty() && !relation.equals(rootNode)) { // un nodo "root" no se
+          // completa consigo mismo
           relation.setSecondIndex(rootNode.getFirstIndex());
           relation.setSecondValue(rootNode.getFirstValue());
           relation.setRoot(false);
 
-          /* obtener la etiqueta para el par de 
-           * elementos que forman la relacion en el contexto actual */
-          String field = fields.findField(relation.getFirstValue(), 
-              relation.getSecondValue(), contextNodes.lastElement());
-          
-           
+          /*
+           * obtener la etiqueta para el par de elementos que forman la relacion en el contexto
+           * actual
+           */
+          String field = fields.findField(relation.getFirstValue(), relation.getSecondValue(),
+              contextNodes.lastElement());
+
           if (field != null) {
             relation.setRelation(field);
           }
@@ -219,13 +219,14 @@ public class ConstToDepend<A,B> {
 
   /**
    * Comprueba si el verbo del nodo es copulativo y modifica el flag copultiveVerb
-   * @param node nodo que contiene el verbo y que se va a comprobar
+   * 
+   * @param node
+   *          nodo que contiene el verbo y que se va a comprobar
    */
   public void isCopulativeVerb(Node node) {
 
     for (String s : getCopulativeVerbs()) {
-      if (node.getValue().substring(0, node.getValue().length() - 2).toLowerCase().equals(s)){
-        //System.err.println("Special verb " + node);
+      if (node.getValue().substring(0, node.getValue().length() - 2).toLowerCase().equals(s)) {
         copulativeVerb = true;
         break;
       } else {
@@ -236,23 +237,26 @@ public class ConstToDepend<A,B> {
 
   /**
    * Crear relacion a partir de un nodo
-   * @param node nodo a partir del cual se creara la relacion
+   * 
+   * @param node
+   *          nodo a partir del cual se creara la relacion
    * @return la relacion creada para el nodo
    */
   public Relation createRelation(Node node) {
     Relation relation = new Relation(num, node.getValue(), 0, "");
 
     if (((node.getFather().getKey().equals("ADJP_ATTR") && node.getKey().contains("ADJ"))
-        || (node.getFather().getKey().equals("NPATTR") 
-            && (node.getKey().equals("N") || node.getKey().equals("NP") 
-                || node.getKey().equals("NPR"))))
+        || (node.getFather().getKey().equals("NPATTR") && (node.getKey().equals("N")
+            || node.getKey().equals("NP") || node.getKey().equals("NPR"))))
         && copulativeVerb) { // comprobar si es root por oracion copulativa
 
       relation.setRoot(true);
 
-      /* verbo root de la oracion se completa la relacion indicando que esta
-       * se establece con un elemento que indica que es el nodo principal de la oracion */
-      if (rootSentence == null) { 
+      /*
+       * verbo root de la oracion se completa la relacion indicando que esta se establece con un
+       * elemento que indica que es el nodo principal de la oracion
+       */
+      if (rootSentence == null) {
         relation.setSecondIndex(0);
         relation.setSecondValue("ROOT");
         relation.setRelation("root");
@@ -261,14 +265,13 @@ public class ConstToDepend<A,B> {
         rootSentence.setRelation("root");
       }
 
-
-    } else if (node.getKey().equals("N") || node.getKey().equals("NP") 
+    } else if (node.getKey().equals("N") || node.getKey().equals("NP")
         || node.getKey().equals("NPR")) {
       relation.setRoot(true);
     } else if (node.getKey().equals("DATE") && node.getFather().getKey().equals("DATE")) {
       relation.setRoot(true);
-    } else if (node.getKey().equals("V") && (
-        (node.getFather().getKey().contains("VPTENSED")) // verbo simple
+    } else if (node.getKey().equals("V") 
+        && ((node.getFather().getKey().contains("VPTENSED")) // verbo simple
         || (node.getFather().getKey().contains("VPUNTENSED")) // clausulas subordinadas
         || node.getFather().getKey().equals("V") // verbo compuesto "ha hecho"
         )) {
@@ -278,11 +281,15 @@ public class ConstToDepend<A,B> {
       if (!copulativeVerb) {
         relation.setRoot(true);
       }
-      
-      if (rootSentence == null && contextNodes.contains("VPTENSED") 
-          && !copulativeVerb) { // verbo root de la oracion
-        /* se completa la relacion indicando que esta se establece con un elemento que indica
-         * que es el nodo principal de la oracion */
+
+      if (rootSentence == null && contextNodes.contains("VPTENSED") && !copulativeVerb) { // verbo
+        // root de
+        // la
+        // oracion
+        /*
+         * se completa la relacion indicando que esta se establece con un elemento que indica que es
+         * el nodo principal de la oracion
+         */
         relation.setSecondIndex(0);
         relation.setSecondValue("ROOT");
         relation.setRelation("root");
@@ -302,13 +309,14 @@ public class ConstToDepend<A,B> {
 
   /**
    * Comprobar si un nodo es terminal dentro del arbol
-   * @param node nodo a comprobar
+   * 
+   * @param node
+   *          nodo a comprobar
    * @return true, en caso de serlo o false, en caso contrario
    */
   public boolean isTerminal(Node node) {
 
     if (node.getNChildrens() == 0) {
-      // System.out.println(node);
       return true;
     } else {
       return false;
@@ -317,7 +325,9 @@ public class ConstToDepend<A,B> {
 
   /**
    * Funcion recursiva que recorre el arbol para crear la lista de relaciones
-   * @param node nodo del subarbol a partir del cual se creara una lista de relaciones
+   * 
+   * @param node
+   *          nodo del subarbol a partir del cual se creara una lista de relaciones
    * @return lista con las relaciones creadas
    */
   public ArrayList<Relation> recursiveFunction(Node node, String context) {
@@ -325,8 +335,9 @@ public class ConstToDepend<A,B> {
     ArrayList<Relation> relations = new ArrayList<>();
 
     if (isTerminal(node)) { // se compueba si es terminal
-      if (!node.getKey().contains("NPSUBJ") 
-          && !node.getKey().contains("NPATTR")) { // se descartan arboles vacios
+      if (!node.getKey().contains("NPSUBJ") && !node.getKey().contains("NPATTR")) { // se descartan
+        // arboles
+        // vacios
         num++;
         relations.add(createRelation(node));
       }
@@ -344,12 +355,14 @@ public class ConstToDepend<A,B> {
       } else {
         // se comprueba si el nodo pertenece a una clausula subordinada
         if (child.getKey().startsWith("CL_")) {
-          /* se llama al metodo recursivo que recorrera la subordinada  
-           * desde el nodo hijo que lo contiene */
+          /*
+           * se llama al metodo recursivo que recorrera la subordinada desde el nodo hijo que lo
+           * contiene
+           */
           relations.addAll(recursiveFunctionSubordinate(child));
         } else {
           // se llama al mismo metodo desde el nodo hijo no terminal
-          relations.addAll(recursiveFunction(child, context)); 
+          relations.addAll(recursiveFunction(child, context));
         }
       }
     }
@@ -364,7 +377,9 @@ public class ConstToDepend<A,B> {
 
   /**
    * Funcion recursiva que recorre el arbol para crear la lista de relaciones
-   * @param node nodo del subarbol a partir del cual se creará una lista de relaciones
+   * 
+   * @param node
+   *          nodo del subarbol a partir del cual se creará una lista de relaciones
    * @return lista con las relaciones creadas
    */
   public ArrayList<Relation> recursiveFunctionSubordinate(Node node) {
@@ -372,25 +387,21 @@ public class ConstToDepend<A,B> {
     ArrayList<Relation> relations = new ArrayList<>();
 
     if (isTerminal(node)) {
-      //System.err.println("terminal -> "+node);
-      //System.out.println(child.getKey()+" "+child.getValue()+" "+num);
       if (!node.getKey().contains("NPSUBJ") && !node.getKey().contains("NPATTR")) {
         num++;
         relations.add(createRelation(node));
-        //completeRelation(relations);
+
       }
     } else {
       contextNodes.push(node.getKey());
     }
 
-    //System.out.println("\t\t " + node);
-    for (Node child: node.getChildrens()) {
+    for (Node child : node.getChildrens()) {
 
-      if (isTerminal(child) == true) {
+      if (isTerminal(child)) {
         if (!child.getKey().contains("NPSUBJ") && !child.getKey().contains("NPATTR")) {
 
           num++;
-          //System.out.println("\t\t  " + child);
           relations.add(createRelation(child));
 
         }
@@ -402,8 +413,6 @@ public class ConstToDepend<A,B> {
 
     }
     completeRelation(relations);
-    /*System.out.println("\t\t---- " + relations);
-    System.out.println("\t\tfin " + node+"\n");*/
 
     contextNodes.pop();
     return relations;
@@ -412,8 +421,10 @@ public class ConstToDepend<A,B> {
 
   /**
    * Crea un arbol a partir de una cadena
+   * 
    * @author Borja Colmerajero Garcia (TFG del 2015-2016)
-   * @param st cadena que contiene el arbol
+   * @param st
+   *          cadena que contiene el arbol
    * @return arbol creado a partir de la cadena
    */
   public Tree createTree(String st) {
@@ -503,8 +514,7 @@ public class ConstToDepend<A,B> {
     }
 
     /*
-     * Guardar el nodo raiz ROOT para comparaciones con la salida (pone ROOT
-     * por defecto)
+     * Guardar el nodo raiz ROOT para comparaciones con la salida (pone ROOT por defecto)
      */
     Node root = new Node();
     root.setKey("ROOT");
@@ -517,9 +527,6 @@ public class ConstToDepend<A,B> {
 
     /* Comprobar si esta bien balanceado (Si no error) */
     if (!stack.isEmpty()) {
-      System.err.println("Arbol " + tree.getId() + ": no esta bien balanceado");
-      System.err.println(tree.getSentence());
-      System.err.println(stack);
       return null;
     }
 

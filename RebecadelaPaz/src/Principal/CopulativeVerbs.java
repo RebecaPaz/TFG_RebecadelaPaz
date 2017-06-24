@@ -1,11 +1,12 @@
 package Principal;
 
-
 /**
- * Enumerado que contiene las formas verbales de los verbos copulativos
+ * Enumerado CopulativeVerbs
+ *
+ * <p>Enumerado que contiene las formas verbales de los verbos copulativos
  * presentes en el treebank
  * 
- * @author Rebeca de la Paz
+ * @author Rebeca de la Paz Gonz&aacute;lez
  *
  */
 public enum CopulativeVerbs {

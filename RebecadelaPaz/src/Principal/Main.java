@@ -1,8 +1,5 @@
 package Principal;
 
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-
 import Field.FieldRelation;
 import Files.FormatConll;
 import Files.FormatStanford;
@@ -11,69 +8,69 @@ import Utils.Node;
 import Utils.Relation;
 import Utils.Tree;
 
+import java.util.ArrayList;
+
 /**
+ * Clase Main
  * 
- * @author Rebeca de la Paz
+ * <p>Contiene los metodos principales de ejecucion del programa
+ * 
+ * @author Rebeca de la Paz Gonz&aacute;lez
  *
- * @param <A>
- * @param <B>
+ * @param <A> parametro de tipo generico
+ * @param <B> parametro de tipo generico
  */
-public class Main<A,B> {
+public class Main<A, B> {
 
   static FormatStanford formatStanford = new FormatStanford();
   static FormatConll formatCoNLL = new FormatConll();
   static FieldRelation<String, String> fieldRelation = null;
 
   /**
+   * Metodo encargado de la lectura del fichero de relaciones y de llamar a la funcion que hara la
+   * transformacion a dependencias
    * 
    * @param args
+   *          parametros con el nombre de los ficheros de entraada a leer y el formato de salida del
+   *          treebank de dependencias
    * @throws Exception
+   *           excepcion en caso de error
    */
-  public static <A,B> void main(String[] args) throws Exception {
+  public static <A, B> void main(String[] args) throws Exception {
 
     String fileFields = "";
     String fileTreebank = "";
     char output = 0;
 
     for (int i = 0; i < args.length; i++) {
-      
-      System.out.println(args[i]);
-      if (args[i].equals("-s") || args[i].equals("-b") 
-          || args[i].equals("-c")) { // formato de treebank de dependencias
+
+      if (args[i].equals("-s") || args[i].equals("-b") || args[i].equals("-c")) { // formato de
+        // treebank de
+        // dependencias
         output = args[i].charAt(1);
       } else if (args[i].equals("-r")) { // fichero con etiquetas de relaciones
         fileFields = args[i + 1];
       } else if (args[i].equals("-t")) { // fichero con treebank de constituyentes
         fileTreebank = args[i + 1];
       }
-      
+
     }
-    // return;
-System.out.println(fileFields);
+
     fieldRelation = new FieldRelation<String, String>(fileFields);
-
-    // System.out.println("main "+fieldRelation.getFieldsRelations());
-
-    /*
-     * Tree tree = new Tree(); Node node = new Node(); ConstToDepend<String, String> dependencies =
-     * new ConstToDepend<String, String>(); ArrayList<ArrayList<Relation>> array_relations = new
-     * ArrayList<>(); ReadFile<String, String> read = new ReadFile<>(); ArrayList<Relation>
-     * relations = new ArrayList<>();
-     * 
-     * 
-     * dependencies.setFieldsRelations(fieldRelation);
-     */
-    // System.out.println(args[args.length-1].charAt(1)+" "+output.);
 
     transform(output, fileTreebank);
 
   }
-  
+
   /**
+   * Metodo de transformacion a dependencias
    * 
    * @param formatFile
+   *          formato del fichero de salida
    * @param fileTreebank
+   *          fichero de entrada del treebank de constituyentes
    * @throws Exception
+   *           excepcion en caso de error
    */
   public static void transform(char formatFile, String fileTreebank) throws Exception {
 
@@ -87,12 +84,10 @@ System.out.println(fileFields);
 
     dependencies.setFieldsRelations(fieldRelation);
 
-    
     ArrayList<String> sentencesRead = read.readLisp(fileTreebank);
-    
+
     open(formatFile);
 
-    // sentences_read.size()
     for (int k = 0; k < sentencesRead.size(); k++) {
 
       String s = sentencesRead.get(k);
@@ -102,28 +97,25 @@ System.out.println(fileFields);
         tree = dependencies.createTree(s.trim().replace("[", "(").replace("]", ")"));
       } catch (Exception e) {
         System.out.println(e.getMessage());
-      } 
+      }
 
-      // System.out.println(tree);
       if (tree == null) {
-        // System.out.println(tree);
-        // System.out.println("nulo");
         clear(arrayRelations, relations, tree, node, dependencies, s);
       } else {
-
-        // System.out.println("es nulo?");
         node = tree.getRoot().getChildrens().get(0);
         for (int i = 0; i < node.getNChildrens(); i++) {
 
-          if (node.getChildrens().get(i).getValue().equals("./PUNCT")) {
+          if (node.getChildrens().get(i).getValue().equals("./PUNCT")) { // final del arbol
             arrayRelations.add(new ArrayList<Relation>());
 
             try {
 
+              /*
+               * caso especial para frases que no contienen un precdicado y por tanto tampoco verbo
+               * principal
+               */
               if (dependencies.getRootSentence() == null) {
-                System.err.println("root special");
                 dependencies.setRootSentence(dependencies.searchRootSpecial(arrayRelations));
-
               }
 
               Relation r = new Relation(dependencies.getNum() + 1,
@@ -132,19 +124,26 @@ System.out.println(fileFields);
                   dependencies.getRootSentence().getFirstValue());
 
               arrayRelations.get(i).add(r);
-              
+
             } catch (NullPointerException e) {
               System.out.println(e.getMessage());
             }
 
           } else {
             arrayRelations.add(new ArrayList<Relation>());
-            arrayRelations.get(i).addAll(dependencies
-                .recursiveFunction(node.getChildrens().get(i), node.getKey()));
+
+            /*
+             * guardar el listado de realaciones resultante de la llamada a la funcion recursiva
+             * para recorrer el arbol
+             */
+            arrayRelations.get(i)
+            .addAll(dependencies.recursiveFunction(node.getChildrens().get(i), node.getKey()));
           }
         }
-        System.out.println("antes de final complete \n" + arrayRelations);
+
+        // completar las relaciones de los elementos principales que forman la oracion
         relations = dependencies.finalCompleteRelation(arrayRelations);
+
         arrayRelations.removeIf(x -> x.isEmpty());
 
         relations.stream().filter(p -> p.getRelation() == "");
@@ -152,7 +151,7 @@ System.out.println(fileFields);
         writeFile(relations, formatFile);
 
         clear(arrayRelations, relations, tree, node, dependencies, s);
-        // break;
+
       }
 
     }
@@ -162,12 +161,14 @@ System.out.println(fileFields);
   }
 
   /**
+   * Abrir el fichero de salida del treebank
    * 
    * @param formatFile
-   * @throws FileNotFoundException
+   *          formato de salida del treebank de dependencias
    * @throws Exception
+   *           excepcion en caso de error al abrir el fichero
    */
-  public static void open(char formatFile) throws FileNotFoundException, Exception {
+  public static void open(char formatFile) throws Exception {
 
     if (formatFile == 's') {
       formatStanford.openFormatFile();
@@ -177,16 +178,20 @@ System.out.println(fileFields);
       formatStanford.openFormatFile();
       formatCoNLL.openFormatFile();
     } else {
-      throw new Exception("\n\nFotmatos disponibles:\n\t0. Stanford\n\t1. CoNLL\n\t2. Ambos\n");
+      throw new Exception("\n\nFormatos disponibles:\n\t-s Stanford\n\t-c CoNLL\n\t-b Ambos\n");
     }
 
   }
 
   /**
+   * Escribir el fichero de salida del treebank
    * 
    * @param relations
+   *          listado de relaciones a escribir
    * @param formatFile
+   *          formato de salida del treebank de dependencias
    * @throws Exception
+   *           excepcion en caso de error al escribir el fichero
    */
   public static void writeFile(ArrayList<Relation> relations, char formatFile) throws Exception {
 
@@ -204,12 +209,14 @@ System.out.println(fileFields);
   }
 
   /**
+   * Cerrar el fichero de salida del treebank
    * 
    * @param formatFile
-   * @throws FileNotFoundException
+   *          formato de salida del treebank de dependencias
    * @throws Exception
+   *           excepcion en caso de error al cerrar el fichero
    */
-  public static void close(char formatFile) throws FileNotFoundException, Exception {
+  public static void close(char formatFile) throws Exception {
 
     if (formatFile == 's') {
       formatStanford.closeFormatFile();
@@ -219,22 +226,29 @@ System.out.println(fileFields);
       formatStanford.closeFormatFile();
       formatCoNLL.closeFormatFile();
     } else {
-      throw new Exception("\n\nFotmatos disponibles:\n\t0. Stanford\n\t1. CoNLL\n\t2. Ambos\n");
+      throw new Exception("\n\nFormatos disponibles:\n\t-s Stanford\n\t-c CoNLL\n\t-b Ambos\n");
     }
   }
 
   /**
+   * Resetear estas variables para la siguiente oracion
    * 
    * @param arrayRelations
+   *          matriz de relaciones de la oracion
    * @param relations
+   *          listado de relaciones de la oracion
    * @param tree
+   *          arbol que forma la oracion
    * @param node
+   *          un nodo de la oracion
    * @param dependencies
+   *          dependencias que crearan las relaciones
    * @param s
+   *          cadena de texto
    */
-  public static void clear(ArrayList<ArrayList<Relation>> arrayRelations, 
-      ArrayList<Relation> relations, Tree tree, Node node, 
-      ConstToDepend<String,String> dependencies, String s) {
+  public static void clear(ArrayList<ArrayList<Relation>> arrayRelations,
+      ArrayList<Relation> relations, Tree tree, Node node,
+      ConstToDepend<String, String> dependencies, String s) {
 
     arrayRelations.clear();
     arrayRelations.removeAll(arrayRelations);
