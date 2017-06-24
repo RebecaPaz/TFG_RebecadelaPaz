@@ -1,5 +1,5 @@
 /**
- * @author Borja Colmenarejo García (TFG del 2015-2016)
+ * @author Borja Colmenarejo Garc&Iacute;a (TFG del 2015-2016)
  */
 package Utils;
 

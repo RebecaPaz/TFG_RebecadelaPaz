@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import Field.FieldRelation;
-import Files.FormatCoNLL;
+import Files.FormatConll;
 import Files.FormatStanford;
 import Files.ReadFile;
 import Utils.Node;
@@ -21,7 +21,7 @@ import Utils.Tree;
 public class Main<A,B> {
 
   static FormatStanford formatStanford = new FormatStanford();
-  static FormatCoNLL formatCoNLL = new FormatCoNLL();
+  static FormatConll formatCoNLL = new FormatConll();
   static FieldRelation<String, String> fieldRelation = null;
 
   /**
@@ -93,7 +93,7 @@ System.out.println(fileFields);
     open(formatFile);
 
     // sentences_read.size()
-    for (int k = 0; k < 1; k++) {
+    for (int k = 0; k < sentencesRead.size(); k++) {
 
       String s = sentencesRead.get(k);
 
