@@ -17,11 +17,12 @@ public class Relation {
   }
 
   /**
+   * Constructor de una relacion
    * 
-   * @param first
-   * @param firstValue
-   * @param second
-   * @param secondValue
+   * @param first posicion del primer elemento en la oracion
+   * @param firstValue palabra que conforma el primer elemento
+   * @param second posicion del segundo elemento en la oracion
+   * @param secondValue palabra que conforma el segundo elemento
    */
   public Relation(int first, String firstValue, int second, String secondValue) {
     this.firstIndex = first;

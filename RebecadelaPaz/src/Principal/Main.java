@@ -36,7 +36,7 @@ public class Main<A, B> {
    * @throws Exception
    *           excepcion en caso de error
    */
-  public static <A, B> void main(String[] args) throws Exception {
+  public static <A, B>  void main(String[] args) throws Exception {
 
     String fileFields = "";
     String fileTreebank = "";
@@ -136,8 +136,8 @@ public class Main<A, B> {
              * guardar el listado de realaciones resultante de la llamada a la funcion recursiva
              * para recorrer el arbol
              */
-            arrayRelations.get(i)
-            .addAll(dependencies.recursiveFunction(node.getChildrens().get(i), node.getKey()));
+            arrayRelations.get(i).addAll(dependencies
+                .recursiveFunction(node.getChildrens().get(i)));
           }
         }
 
@@ -147,7 +147,7 @@ public class Main<A, B> {
         arrayRelations.removeIf(x -> x.isEmpty());
 
         relations.stream().filter(p -> p.getRelation() == "");
-
+        System.out.println(relations);
         writeFile(relations, formatFile);
 
         clear(arrayRelations, relations, tree, node, dependencies, s);

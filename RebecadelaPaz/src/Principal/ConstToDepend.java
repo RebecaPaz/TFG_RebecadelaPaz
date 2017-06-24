@@ -330,7 +330,7 @@ public class ConstToDepend<A,B> {
    *          nodo del subarbol a partir del cual se creara una lista de relaciones
    * @return lista con las relaciones creadas
    */
-  public ArrayList<Relation> recursiveFunction(Node node, String context) {
+  public ArrayList<Relation> recursiveFunction(Node node) {
 
     ArrayList<Relation> relations = new ArrayList<>();
 
@@ -362,7 +362,7 @@ public class ConstToDepend<A,B> {
           relations.addAll(recursiveFunctionSubordinate(child));
         } else {
           // se llama al mismo metodo desde el nodo hijo no terminal
-          relations.addAll(recursiveFunction(child, context));
+          relations.addAll(recursiveFunction(child));
         }
       }
     }
