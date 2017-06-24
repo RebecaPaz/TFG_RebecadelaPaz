@@ -1,5 +1,23 @@
+/.DS_Store
+/.checkstyle
+/.classpath
+/.project
+/.settings/
 /Extras/
 /Field/
 /Files/
+/GRAMPAL TABLA 100 ORACIONES_nuevas_V01.csv
+/GRAMPAL TABLA 100 ORACIONES_nuevas_V01.xlsx
 /Principal/
+/TFG_Class_Diagram.ucls
+/UAM_TreeBank_es_Neg.xml
 /Utils/
+/constituency_treebank.lisp
+/dependency_fields.xlsx
+/doc/
+/errores.txt
+/jar/
+/listado_relaciones.txt
+/subordinadas_treebank_100_primeras.txt
+/treebank_dependenciesCoNLL.csv
+/treebank_dependenciesStanford.txt
