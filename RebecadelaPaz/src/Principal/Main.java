@@ -44,9 +44,8 @@ public class Main<A, B> {
 
     for (int i = 0; i < args.length; i++) {
 
-      if (args[i].equals("-s") || args[i].equals("-b") || args[i].equals("-c")) { // formato de
-        // treebank de
-        // dependencias
+      // formato de treebank de dependencias
+      if (args[i].equals("-s") || args[i].equals("-b") || args[i].equals("-c")) { 
         output = args[i].charAt(1);
       } else if (args[i].equals("-r")) { // fichero con etiquetas de relaciones
         fileFields = args[i + 1];

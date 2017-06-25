@@ -80,7 +80,7 @@ public class Relation {
   }
 
   /**
-   * Comprobar si el segundo elemento de la relaci�n se encuentra vacio
+   * Comprobar si el segundo elemento de la relacion se encuentra vacio
    * 
    * @return true, en caso de serlo, o false, en caso contrario
    */
@@ -130,7 +130,6 @@ public class Relation {
   public String toString() {
     String first = this.firstIndex + " " + this.firstValue;
     String second = this.secondIndex + " " + this.secondValue;
-    // return this.relation+"("+ first + " - " + second +")"+"root:"+this.root;
 
     return this.relation + " (" + first + " - " + second + ")";
   }

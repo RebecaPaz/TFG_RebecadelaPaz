@@ -45,7 +45,7 @@ public class Tuple<A, B> {
   @Override
   public String toString() {
 
-    return "(" + this.elem1 + "," + this.elem2 + ")";
+    return "(" + this.elem1 + ", " + this.elem2 + ")";
 
   }
 
@@ -59,10 +59,8 @@ public class Tuple<A, B> {
     }
 
     Tuple<?, ?> tuple = (Tuple<?, ?>) o;
-    if (!elem1.equals(tuple.elem1)) {
-      return false;
-    }
-    return elem2.equals(tuple.elem2);
+    
+    return elem1.equals(tuple.elem1) && elem2.equals(tuple.elem2);
   }
 
 }
