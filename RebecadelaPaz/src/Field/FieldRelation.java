@@ -10,7 +10,8 @@ import Files.ReadFile;
 /**
  * Clase FieldRelation
  *
- * <p>Maneja un listado de etiquetas
+ * <p>
+ * Maneja un listado de etiquetas
  * 
  * @author Rebeca de la Paz Gonz&aacute;lez
  *
@@ -39,6 +40,15 @@ public class FieldRelation<A, B> {
     this.fieldsRelations.addAll(fieldRelations);
   }
 
+  /**
+   * Crea el listado de etiquetas a partir de la lectura del fichero
+   * 
+   * @param filename
+   *          nombre del fichero a leer
+   * @return listado de etiquetas
+   * @throws Exception
+   *           excepcion en caso de error
+   */
   private ArrayList<Field<A, B>> createFieldRelation(String filename) throws Exception {
     ReadFile<A, B> read = new ReadFile<>();
     return read.readExcel(filename);
@@ -61,9 +71,9 @@ public class FieldRelation<A, B> {
     String[] string2 = elem2.split("/");
     final int index1;
     final int index2;
-    
+
     if (string1.length > 1) {
-      index1 = 1; 
+      index1 = 1;
     } else {
       index1 = 0;
     }
@@ -73,7 +83,7 @@ public class FieldRelation<A, B> {
     } else {
       index2 = 0;
     }
-    
+
     Supplier<List<Field<A, B>>> supplier = () -> new ArrayList<Field<A, B>>();
 
     List<Field<A, B>> streamFields = fieldsRelations.stream()

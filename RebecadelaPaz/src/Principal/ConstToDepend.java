@@ -149,7 +149,7 @@ public class ConstToDepend<A,B> {
             relation.setSecondIndex(rootSentence.getFirstIndex());
             relation.setSecondValue(rootSentence.getFirstValue());
             relation.setRoot(false);
-
+            
           }
 
           relations.add(relation);
@@ -333,6 +333,10 @@ public class ConstToDepend<A,B> {
   public ArrayList<Relation> recursiveFunction(Node node) {
 
     ArrayList<Relation> relations = new ArrayList<>();
+    
+    /*if (contextNodes.empty()) {
+      contextNodes.push("S");
+    }*/
 
     if (isTerminal(node)) { // se compueba si es terminal
       if (!node.getKey().contains("NPSUBJ") && !node.getKey().contains("NPATTR")) { // se descartan

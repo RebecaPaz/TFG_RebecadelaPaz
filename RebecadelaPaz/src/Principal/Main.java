@@ -8,6 +8,7 @@ import Utils.Node;
 import Utils.Relation;
 import Utils.Tree;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -35,8 +36,10 @@ public class Main<A, B> {
    *          treebank de dependencias
    * @throws Exception
    *           excepcion en caso de error
+   * @throws FileNotFoundException
+   *           excepcion si no existe el fichero
    */
-  public static <A, B>  void main(String[] args) throws Exception {
+  public static void main(String[] args) throws Exception, FileNotFoundException {
 
     String fileFields = "";
     String fileTreebank = "";
@@ -55,7 +58,12 @@ public class Main<A, B> {
 
     }
 
-    fieldRelation = new FieldRelation<String, String>(fileFields);
+    try {
+      fieldRelation = new FieldRelation<String, String>(fileFields); 
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+      return;
+    }
 
     transform(output, fileTreebank);
 
@@ -70,8 +78,11 @@ public class Main<A, B> {
    *          fichero de entrada del treebank de constituyentes
    * @throws Exception
    *           excepcion en caso de error
+   * @throws FileNotFoundException
+   *           excepcion si no existe el fichero
    */
-  public static void transform(char formatFile, String fileTreebank) throws Exception {
+  public static void transform(char formatFile, String fileTreebank) 
+      throws Exception, FileNotFoundException {
 
     Tree tree = new Tree();
     Node node = new Node();
@@ -80,14 +91,21 @@ public class Main<A, B> {
     ArrayList<ArrayList<Relation>> arrayRelations = new ArrayList<>();
     ReadFile<String, String> read = new ReadFile<>();
     ArrayList<Relation> relations = new ArrayList<>();
-
+    ArrayList<String> sentencesRead ;
     dependencies.setFieldsRelations(fieldRelation);
-
-    ArrayList<String> sentencesRead = read.readLisp(fileTreebank);
+    
+    
+    try {
+      sentencesRead = read.readLisp(fileTreebank);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+      return;
+    }
+    
 
     open(formatFile);
-
-    for (int k = 0; k < sentencesRead.size(); k++) {
+    //sentencesRead.size()
+    for (int k = 0; k < 2; k++) {
 
       String s = sentencesRead.get(k);
 
@@ -142,7 +160,7 @@ public class Main<A, B> {
 
         // completar las relaciones de los elementos principales que forman la oracion
         relations = dependencies.finalCompleteRelation(arrayRelations);
-
+        //relations = depen
         arrayRelations.removeIf(x -> x.isEmpty());
 
         relations.stream().filter(p -> p.getRelation() == "");
