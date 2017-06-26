@@ -19,8 +19,8 @@ public class FieldTest {
   public void fieldTest(String a, String b, String c, String d) {
     Field<String, String> f = new Field<String, String>(
         new Tuple<String, String>(a, b), c, d);
-    String s = "{(npsubj, vptensed), s, nsubj}".replace("\\s","");
     
+    String s = "{(npsubj, vptensed), s, nsubj}".replace("\\s","");
     
     assertEquals(f.toString().replace("\\s","").equals(s), true);
     f.setElements(new Tuple<String, String>("valor1", ""));

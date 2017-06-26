@@ -23,7 +23,6 @@ public class RelationTest {
   @junitparams.Parameters({ "1, la, 2, vecina, true", "2, prueba, 4, Relation, true" })
   public void replace(int aa, String a, int bb, String b, Boolean valid) {
     Relation r = new Relation(aa, a, bb, b);
-
     r.replaceRelation(new Relation());
     assertNotEquals(r.equals(new Relation(aa, a, bb, b)), valid);
 
