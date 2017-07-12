@@ -101,11 +101,11 @@ public class Main<A, B> {
       e.printStackTrace();
       return;
     }
-    
+    System.out.println(sentencesRead.size());
 
     open(formatFile);
     //sentencesRead.size()
-    for (int k = 0; k < 2; k++) {
+    for (int k = 0; k < sentencesRead.size(); k++) {
 
       String s = sentencesRead.get(k);
 
@@ -119,6 +119,7 @@ public class Main<A, B> {
       if (tree == null) {
         clear(arrayRelations, relations, tree, node, dependencies, s);
       } else {
+        System.out.println(tree);
         node = tree.getRoot().getChildrens().get(0);
         for (int i = 0; i < node.getNChildrens(); i++) {
 

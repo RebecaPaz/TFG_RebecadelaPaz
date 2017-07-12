@@ -50,7 +50,7 @@ public class FormatStanford implements Format {
    */
   public void openFormatFile() throws Exception {
     fw = new BufferedWriter(new OutputStreamWriter(
-        new FileOutputStream("treebank_dependenciesStanford.txt"), "ISO-8859-1"));
+        new FileOutputStream("treebank_dependenciesStanford.txt"), "UTF-8"));
   }
 
   /**

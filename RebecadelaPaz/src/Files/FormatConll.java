@@ -93,6 +93,7 @@ public class FormatConll implements Format {
 
       if (endSentence) {
         fw.write(END);
+        fw.write(END);
       }
     }
 
